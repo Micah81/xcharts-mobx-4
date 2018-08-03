@@ -3,22 +3,22 @@ import 'firebase/auth';
 import 'firebase/database';
 
 const prodConfig = {
-  apiKey: YOUR_API_KEY,
-  authDomain: YOUR_AUTH_DOMAIN,
-  databaseURL: YOUR_DATABASE_URL,
-  projectId: YOUR_PROJECT_ID,
-  storageBucket: '',
-  messagingSenderId: YOUR_MESSAGING_SENDER_ID,
-};
+    apiKey: "AIzaSyAIfCmXQcx0iCIeot1-PtmrJBPD7fDOGGI",
+    authDomain: "xcharts-385f8.firebaseapp.com",
+    databaseURL: "https://xcharts-385f8.firebaseio.com",
+    projectId: "xcharts-385f8",
+    storageBucket: "xcharts-385f8.appspot.com",
+    messagingSenderId: "121322119064"
+  };
 
 const devConfig = {
-  apiKey: YOUR_API_KEY,
-  authDomain: YOUR_AUTH_DOMAIN,
-  databaseURL: YOUR_DATABASE_URL,
-  projectId: YOUR_PROJECT_ID,
-  storageBucket: '',
-  messagingSenderId: YOUR_MESSAGING_SENDER_ID,
-};
+    apiKey: "AIzaSyAIfCmXQcx0iCIeot1-PtmrJBPD7fDOGGI",
+    authDomain: "xcharts-385f8.firebaseapp.com",
+    databaseURL: "https://xcharts-385f8.firebaseio.com",
+    projectId: "xcharts-385f8",
+    storageBucket: "xcharts-385f8.appspot.com",
+    messagingSenderId: "121322119064"
+  };
 
 const config = process.env.NODE_ENV === 'production'
   ? prodConfig

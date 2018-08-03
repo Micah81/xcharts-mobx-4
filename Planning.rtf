@@ -1,0 +1,43 @@
+Install that link into a new xcharts program. [done]
+
+Add FB creds and do firebase init. [done]
+
+Verify can login / logout. [done]
+
+Try: Add a counter to the home page with a button that updates state with the next increment when pressed.
+
+Then: Remove the counter.
+
+Add a Candlestick chart with dark theme.
+
+Set the default symbol array in a new store. Also set a default active symbol.
+
+Tell the code how to grab the first symbol in the array and set it as the active symbol.
+
+Set the default chart data in this store.
+
+Set the chart to update using this store.
+
+On page load, grab the top 10 stocks of the day, either from the database* or robinhood. Replace the symbol array with these top 10 symbols.
+
+The code will already be set to update the active symbol using the first symbol in the symbol array (from above).
+
+*The top 10 stocks should be set to run only once per day, by storing them and the time retrieved in the database.
+
+
+Button click:
+>> if logged out:
+
+Log vote locally and update active symbol to the next symbol in the symbol array.
+
+** If they then login, I want their votes to be placed into the database under their username.
+
+>> if logged in: Every user will have their own symbol array. It includes:
+
+                The day’s top 10 stocks
+
+                Their past votes
+
+                Symbols the user prefers
+
+                Log their vote in the database under their username.
