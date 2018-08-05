@@ -2,7 +2,7 @@ import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { compose } from 'recompose';
 
-const Counter = ( { counterStore }) => (
+const Counter = ({ counterStore }) => (
   <div>
     <button onClick={() => counterStore.increment()}>+1</button>
     <span>{ counterStore.counter }</span>

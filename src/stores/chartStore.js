@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { action, observable } from 'mobx';
 
 class ChartStore {
   @observable chartData = [
@@ -13,9 +13,6 @@ class ChartStore {
     this.rootStore = rootStore;
   }
 
-  @action chgChartData = () => {
-    this.chartData = ChartStore.chartData;
-  }
 }
 
 export default ChartStore;

@@ -1,14 +1,21 @@
 import React from 'react';
-import { observer } from 'mobx-react';
-import store from './store.js';
+import { inject, observer } from 'mobx-react';
+import { compose } from 'recompose';
 import { VictoryCandlestick } from 'victory';
 
-const CandlestickChart = () => (
+const CandlestickChart = ({ chartStore }) => (
   <div>
-    <VictoryCandlestick
-      data={store.chartData}
+  <h1>Chart</h1>
+  {console.log(chartStore.chartData)}
+  <VictoryCandlestick
+    data={
+      chartStore.chartData
+    }
     />
   </div>
 );
 
-export default observer(CandlestickChart);
+export default compose(
+  inject('chartStore'),
+  observer
+)(CandlestickChart)
