@@ -1,13 +1,16 @@
 import React from 'react';
-import { observer } from 'mobx-react';
-import store from './store.js';
+import { inject, observer } from 'mobx-react';
+import { compose } from 'recompose';
 
-const Counter = () => (
+const Counter = ( { counterStore }) => (
   <div>
-    <button onClick={() => store.increment()}>+1</button>
-    <span>{store.counter}</span>
-    <button onClick={() => store.decrement()}>-1</button>
+    <button onClick={() => counterStore.increment()}>+1</button>
+    <span>{ counterStore.counter }</span>
+    <button onClick={() => counterStore.decrement()}>-1</button>
   </div>
 );
 
-export default observer(Counter);
+export default compose(
+  inject('counterStore'),
+  observer
+)(Counter)
