@@ -9,7 +9,7 @@ class CandlestickChart extends Component {
       <div>
         <h1>Chart</h1>
         <VictoryCandlestick
-          data={this.chartStore}
+          data={this.props.chartStore.chartData.slice()}
         />
       </div>
     )

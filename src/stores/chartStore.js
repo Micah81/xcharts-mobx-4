@@ -1,6 +1,7 @@
-import { action, observable } from 'mobx';
+import { observable } from 'mobx';
 
 class ChartStore {
+
   @observable chartData = [
     {open: 5, close: 10, high: 15, low: 0},
     {open: 10, close: 15, high: 20, low: 5},
