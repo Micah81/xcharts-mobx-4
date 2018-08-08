@@ -1,4 +1,5 @@
 import { action, observable } from 'mobx';
+import recordUpVote from '../utils/recordVote';
 
 class ChartStore {
 
@@ -8,8 +9,11 @@ class ChartStore {
 
   @observable n = 0
 
-  @action updateChart(ActiveSymbol){
+  @action updateChart(ActiveSymbol, Vote, User){
     // record vote
+    recordUpVote(ActiveSymbol, User)
+
+
 
     // change activeSymbol
     this.n++
@@ -17,8 +21,6 @@ class ChartStore {
 
     // update activeSymbol
     this.activeSymbol = this.allSymbols[this.n]
-
-    //this.activeSymbol = ActiveSymbol
 
     // get chartData for new activeSymbol
 

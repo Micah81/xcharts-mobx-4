@@ -1,0 +1,42 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "meals": {
+      ".read": true
+    },
+    "recipes": {
+      ".read": true,
+      ".indexOn": [
+        "category"
+      ]
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        "firstName": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "lastName": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "lastLoggedIn": {
+          ".validate": "newData.val() <= now"
+        },
+        "signedUp": {
+          ".validate": "newData.val() <= now"
+        },
+        "role": {
+          ".validate": "(root.child('users/'+auth.uid+'/role').val() === 'admin' && newData.val() === 'admin') || newData.val() === 'user'"
+        }
+      }
+    },
+    "favourites": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    }
+  }
+}
