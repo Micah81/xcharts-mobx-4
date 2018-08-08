@@ -1,6 +1,16 @@
-import { observable } from 'mobx';
+import { action, observable } from 'mobx';
 
 class ChartStore {
+
+  @observable allSymbols = ['SQ', 'AMZN', 'WMT', 'AMD']
+
+  @observable activeSymbol = 'SQ'
+
+  @action test(ActiveSymbol){
+    console.log('Active Symbol: ', ActiveSymbol)
+    console.log(this.allSymbols[1])
+    this.activeSymbol = ActiveSymbol
+  }
 
   @observable chartData = [
     {open: 5, close: 10, high: 15, low: 0},

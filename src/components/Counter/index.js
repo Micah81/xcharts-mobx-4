@@ -1,12 +1,13 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { compose } from 'recompose';
+import Button from '@material-ui/core/Button';
 
 const Counter = ({ counterStore }) => (
   <div>
-    <button onClick={() => counterStore.increment()}>+1</button>
+    <Button onClick={() => counterStore.increment()}>+1</Button>
     <span>{ counterStore.counter }</span>
-    <button onClick={() => counterStore.decrement()}>-1</button>
+    <Button onClick={() => counterStore.decrement()}>-1</Button>
   </div>
 );
 
