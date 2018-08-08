@@ -5,13 +5,8 @@ import Button from '@material-ui/core/Button';
 
 const ChartButtons = ({ chartStore }) => (
   <div>
-  {
-    console.log(
-      chartStore.activeSymbol
-    )
-  }
     <Button variant="contained" color="primary"
-    onClick={() => chartStore.test(chartStore.activeSymbol)}>
+    onClick={() => chartStore.updateChart(chartStore.activeSymbol)}>
       Up
     </Button>
   </div>

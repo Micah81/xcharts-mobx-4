@@ -6,10 +6,28 @@ class ChartStore {
 
   @observable activeSymbol = 'SQ'
 
-  @action test(ActiveSymbol){
+  @observable n = 0
+
+  @action updateChart(ActiveSymbol){
+    // record vote
+
+    // change activeSymbol
+    this.n++
+    console.log('n: ',this.n)
+
+    // update activeSymbol
+    this.activeSymbol = this.allSymbols[this.n]
+
+    //this.activeSymbol = ActiveSymbol
+
+    // get chartData for new activeSymbol
+
+    // update chartData
+    //this.chartData = ChartData
+
     console.log('Active Symbol: ', ActiveSymbol)
-    console.log(this.allSymbols[1])
-    this.activeSymbol = ActiveSymbol
+    console.log(this.allSymbols[this.n])
+
   }
 
   @observable chartData = [
