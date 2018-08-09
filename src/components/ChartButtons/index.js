@@ -9,7 +9,7 @@ const ChartButtons = ({ chartStore, sessionStore }) => (
     onClick={() => chartStore.updateChart(
         chartStore.activeSymbol,
         'Up',
-        sessionStore.authUser.email
+        sessionStore.authUser.uid
       )}>
       Up
     </Button>
@@ -17,7 +17,7 @@ const ChartButtons = ({ chartStore, sessionStore }) => (
     onClick={() => chartStore.updateChart(
         chartStore.activeSymbol,
         'Down',
-        sessionStore.authUser.email
+        sessionStore.authUser.uid
       )}>
       Down
     </Button>
@@ -25,7 +25,7 @@ const ChartButtons = ({ chartStore, sessionStore }) => (
     onClick={() => chartStore.updateChart(
         chartStore.activeSymbol,
         'Sideways',
-        sessionStore.authUser.email
+        sessionStore.authUser.uid
       )}>
       Sideways
     </Button>
@@ -33,7 +33,7 @@ const ChartButtons = ({ chartStore, sessionStore }) => (
     onClick={() => chartStore.updateChart(
         chartStore.activeSymbol,
         'Unsure',
-        sessionStore.authUser.email
+        sessionStore.authUser.uid
       )}>
       Unsure
     </Button>

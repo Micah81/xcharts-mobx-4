@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx';
-import recordUpVote from '../utils/recordVote';
+import { db } from '../firebase';
+import moment from 'moment';
 
 class ChartStore {
 
@@ -11,8 +12,10 @@ class ChartStore {
 
   @action updateChart(ActiveSymbol, Vote, User){
     // record vote
-    recordUpVote(ActiveSymbol, User)
-
+    var today = moment().format('MMDDYYYY');
+    if (Vote === 'Up') {
+      db.voteUp(ActiveSymbol, today, User)
+    }
 
 
     // change activeSymbol
