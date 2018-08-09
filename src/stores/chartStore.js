@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx';
+import { action, observable, runInAction } from 'mobx'; // originally here
 import { db } from '../firebase';
 import moment from 'moment';
 import * as api from '../utils/api';
@@ -11,7 +11,8 @@ class ChartStore {
 
   @observable n = 0
 
-  @action updateChart(ActiveSymbol, Vote, User){
+  @action
+  async updateChart(ActiveSymbol, Vote, User) {
 
     // record vote
     var today = moment().format('MMDDYYYY');
@@ -27,23 +28,29 @@ class ChartStore {
 
     // change activeSymbol
     this.n++
-    console.log('n: ',this.n)
 
     // update activeSymbol
     this.activeSymbol = this.allSymbols[this.n]
 
-    // get chartData for new activeSymbol
+    try {
+        // get the stuff!
+        const cdata = await api.fetchChartData(this.activeSymbol)
+
+        //once you get it ...
+        // after await, modifying state again, needs an actions:
+        runInAction(() => {
+            this.chartData = cdata
+            console.log('Maybe it ran?')
+        })
+    } catch (error) {
+        runInAction(() => {
+            console.log('error in chartStore', error)
+        })
+    }
+}
 
 
 
-
-    this.chartData = api.fetchChartData(this.activeSymbol)
-
-    console.log('Active Symbol: ', ActiveSymbol)
-    console.log(this.allSymbols[this.n])
-    console.log('chartData: ', this.chartData)
-
-  }
 
   @observable chartData = [
     {open: 5, close: 10, high: 15, low: 0},
