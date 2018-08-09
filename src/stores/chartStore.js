@@ -15,7 +15,14 @@ class ChartStore {
     var today = moment().format('MMDDYYYY');
     if (Vote === 'Up') {
       db.voteUp(ActiveSymbol, today, User)
+    } else if (Vote ==='Down') {
+      db.voteDown(ActiveSymbol, today, User)
+    } else if (Vote === 'Sideways') {
+      db.voteSideways(ActiveSymbol, today, User)
+    } else if (Vote === 'Unsure') {
+      db.voteUnsure(ActiveSymbol, today, User)
     }
+
 
 
     // change activeSymbol
