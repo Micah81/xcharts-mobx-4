@@ -3,6 +3,9 @@ import { inject, observer } from 'mobx-react';
 import { compose } from 'recompose';
 import { VictoryCandlestick } from 'victory';
 
+
+
+////-------------------------------------------------------
 class CandlestickChart extends Component {
   render() {
     return (

@@ -1,6 +1,7 @@
 import { action, observable } from 'mobx';
 import { db } from '../firebase';
 import moment from 'moment';
+import * as api from '../utils/api';
 
 class ChartStore {
 
@@ -11,6 +12,7 @@ class ChartStore {
   @observable n = 0
 
   @action updateChart(ActiveSymbol, Vote, User){
+
     // record vote
     var today = moment().format('MMDDYYYY');
     if (Vote === 'Up') {
@@ -23,8 +25,6 @@ class ChartStore {
       db.voteUnsure(ActiveSymbol, today, User)
     }
 
-
-
     // change activeSymbol
     this.n++
     console.log('n: ',this.n)
@@ -34,11 +34,14 @@ class ChartStore {
 
     // get chartData for new activeSymbol
 
-    // update chartData
-    //this.chartData = ChartData
+
+
+
+    this.chartData = api.fetchChartData(this.activeSymbol)
 
     console.log('Active Symbol: ', ActiveSymbol)
     console.log(this.allSymbols[this.n])
+    console.log('chartData: ', this.chartData)
 
   }
 
