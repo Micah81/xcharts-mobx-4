@@ -2,14 +2,51 @@ import React from 'react';
 import Counter from '../Counter';
 import CandlestickChart from '../Chart';
 import ChartButtons from '../ChartButtons';
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 
-const LandingPage = () =>
-  <div>
-    <h1>Landing</h1>
-    <p>The Landing Page is open to everyone, even though the user isnt signed in.</p>
-    <Counter/>
-    <CandlestickChart/>
-    <ChartButtons/>
-  </div>
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+});
 
-export default LandingPage;
+function LandingPage(props) {
+  const { classes } = props;
+
+  return (
+    <div className={classes.root}>
+      <Grid container spacing={24}>
+        <Grid item xs={12}>
+          <Paper className={classes.paper}><h3>Over the next three months, this chart is going...</h3></Paper>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}><ChartButtons/></Paper>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Paper className={classes.paper}><CandlestickChart/></Paper>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Paper className={classes.paper}>xs=6 sm=3</Paper>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Paper className={classes.paper}>xs=6 sm=3</Paper>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Paper className={classes.paper}>xs=6 sm=3</Paper>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Paper className={classes.paper}>xs=6 sm=3</Paper>
+        </Grid>
+      </Grid>
+    </div>
+  );
+}
+
+export default withStyles(styles)(LandingPage);

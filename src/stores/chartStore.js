@@ -32,19 +32,15 @@ class ChartStore {
     // update activeSymbol
     this.activeSymbol = this.allSymbols[this.n]
 
+    // update chartData
     try {
-        // get the stuff!
         const cdata = await api.fetchChartData(this.activeSymbol)
-
-        //once you get it ...
-        // after await, modifying state again, needs an actions:
         runInAction(() => {
             this.chartData = cdata
-            console.log('Maybe it ran?')
         })
     } catch (error) {
         runInAction(() => {
-            console.log('error in chartStore', error)
+            console.log('Error in chartStore near //update chartData', error)
         })
     }
 }
