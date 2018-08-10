@@ -163,21 +163,22 @@ export const voteUnsure = (symbol, today, user) =>
     });
 })
 
-
 // VOTING - MOCK TRADING API
 export const mockBuy = (symbol, today, user, currentPrice) =>
-  //console.log(symbol, today, user, currentPrice)
   // does user already have a trade open for this symbol?
-  // if not, buy it.
-  db.ref('/mocktrades/' +symbol+ '/').push({
-    user: user,
-    dateOpened: today,
-    priceOpened: currentPrice
-  }).then(()=>{
-   db.ref('/users/'+user+ '/mocktrades/').push({
-     symbol: symbol,
-     dateOpened: today,
-     priceOpened: currentPrice
-   })
-})
+  db.ref(  '/users/' +user+ '/mocktrades/' +today+ '/' +symbol+ '/').once("value", function(snapshot) {
+    console.log('mockBuy snapshot: ',snapshot.val());
+    if(snapshot.val()==null){
+      // if not, buy it.
+      db.ref('/mocktrades/' +symbol+ '/' +today+ '/users/' +user+ '/').push({
+        priceOpened: currentPrice
+      }).then(()=>{
+       db.ref('/users/'+user+ '/mocktrades/' +today+ '/' +symbol+ '/').push({
+         priceOpened: currentPrice
+       })
+    })
+    }
+    else console.log('This user already traded this instrument on this day.')
+}
+)
 // if they do have a trade in this already open (find sym, compare dates), don't open another. Maybe this should be an option.
