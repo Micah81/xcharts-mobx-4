@@ -183,7 +183,15 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
      })
   })
     }
-    else console.log('This user already traded this instrument on this day.')
-}
+    else {
+      console.log('This user already traded this instrument on this day.')
+      snapshot.forEach(function(data) {
+        console.log('data.key: ',data.key)
+        db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/' +data.key+ '/').once("value", function(snapshot) {
+          console.log('maybe? ', snapshot.val().quantity)
+        })
+      })
+    }
+  }
 )
 // if they do have a trade in this already open (find sym, compare dates), don't open another. Maybe this should be an option.
