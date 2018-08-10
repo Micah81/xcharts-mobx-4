@@ -166,7 +166,8 @@ export const voteUnsure = (symbol, today, user) =>
 // VOTING - MOCK TRADING API
 export const mockBuy = (symbol, today, user, currentPrice) =>
   // does user already have a trade open for this symbol?
-  db.ref(  '/users/' +user+ '/mocktrades/' +today+ '/' +symbol+ '/').once("value", function(snapshot) {
+  //db.ref(  '/users/' +user+ '/mocktrades/' +today+ '/' +symbol+ '/').once("value", function(snapshot) {
+  db.ref(  '/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
     console.log('mockBuy snapshot: ',snapshot.val());
     if(snapshot.val()==null){
       // if not, buy it.
@@ -176,7 +177,11 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
        db.ref('/users/'+user+ '/mocktrades/' +today+ '/' +symbol+ '/').push({
          priceOpened: currentPrice
        })
-    })
+    }).then(()=>{
+     db.ref('/users/'+user+ '/mocktrades/holdings/' +symbol+ '/').push({
+       quantity: 1
+     })
+  })
     }
     else console.log('This user already traded this instrument on this day.')
 }
