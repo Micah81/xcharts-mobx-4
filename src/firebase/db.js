@@ -162,3 +162,15 @@ export const voteUnsure = (symbol, today, user) =>
         }
     });
 })
+
+
+// VOTING - MOCK TRADING API
+export const mockBuy = (symbol, today, user, currentPrice) =>
+  console.log(symbol, today, user, currentPrice)
+
+  // does user already have a trade open for this symbol?
+
+  // if not, buy it.
+  /*db.ref('/mocktrades/' +today+ '/' +symbol+ '/voters/').push({
+    user: user
+  })*/

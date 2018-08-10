@@ -1,4 +1,4 @@
-import { action, observable, runInAction } from 'mobx'; // originally here
+import { action, observable, runInAction } from 'mobx';
 import { db } from '../firebase';
 import moment from 'moment';
 import * as api from '../utils/api';
@@ -11,6 +11,8 @@ class ChartStore {
 
   @observable n = 0
 
+  @observable currentPrice = 10
+
   @action
   async updateChart(ActiveSymbol, Vote, User) {
 
@@ -18,13 +20,14 @@ class ChartStore {
     var today = moment().format('MMDDYYYY');
     if (Vote === 'Up') {
       db.voteUp(ActiveSymbol, today, User)
+      db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
-    }
+    }    
 
     // change activeSymbol
     this.n++
@@ -55,7 +58,7 @@ class ChartStore {
     {open: 10, close: 8, high: 15, low: 5}
   ]
 
-  @observable currentPrice = 10
+
 
   constructor(rootStore) {
     this.rootStore = rootStore;
