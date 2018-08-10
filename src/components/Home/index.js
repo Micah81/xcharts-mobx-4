@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { compose } from 'recompose';
-
+import MenuAppBar from '../Layout/AppBar';
 import withAuthorization from '../Session/withAuthorization';
 import { db } from '../../firebase';
 
@@ -19,6 +19,7 @@ class HomePage extends Component {
 
     return (
       <div>
+        <MenuAppBar/>
         <h1>Home</h1>
         <p>The Home Page is accessible by every signed in user.</p>
 
