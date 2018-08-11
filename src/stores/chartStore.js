@@ -2,10 +2,12 @@ import { action, observable, runInAction } from 'mobx';
 import { db } from '../firebase';
 import moment from 'moment';
 import * as api from '../utils/api';
+import * as ts from '../utils/robinhood/topStocks';
+import * as creds from '../utils/robinhood/credentials';
 
 class ChartStore {
 
-  @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD']
+  @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
   @observable activeSymbol = 'NA'
 
@@ -14,7 +16,33 @@ class ChartStore {
   @observable currentPrice = 10
 
   @action
+  async updateSymbolsArray(){
+    try {
+      const sdata = await ts.TopStocks(creds.credentials)
+      runInAction(() => {
+        console.log('sdata:',sdata)
+        sdata.map(
+          (data) => (
+              this.allSymbols.push(data.symbol)
+            )
+          )
+        //this.allSymbols = sdata // too much data! Just symbols
+      })
+    } catch (error) {
+        runInAction(() => {
+            console.log('Error in chartStore in updateSymbolsArray', error)
+        })
+    }
+  }
+
+  @action
   async updateChart(ActiveSymbol, Vote, User) {
+
+    // The first time this button is pushed, and only the first time,
+    // run updateSymbolsArray()
+    if (this.n === 0){
+      this.updateSymbolsArray()
+    }
 
     // record vote
     var today = moment().format('MMDDYYYY');
@@ -42,7 +70,7 @@ class ChartStore {
         runInAction(() => {
             this.chartData = cdata
             this.currentPrice = cdata[cdata.length-1].close
-            console.log('currentPrice of the NEW chart: ', this.currentPrice)
+            //console.log('currentPrice of the NEW chart: ', this.currentPrice)
         })
     } catch (error) {
         runInAction(() => {

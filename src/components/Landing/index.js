@@ -1,5 +1,4 @@
 import React from 'react';
-import Counter from '../Counter';
 import CandlestickChart from '../Chart';
 import ChartButtons from '../ChartButtons';
 import { withStyles } from '@material-ui/core/styles';
