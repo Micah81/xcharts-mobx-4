@@ -190,12 +190,26 @@ export const mockSell = (symbol, today, user, currentPrice) =>
   // does user already have a trade open for this symbol?
   db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
     if(snapshot.val()==null){
-      alert('null!')
+      console.log('No trade is currently open for '+symbol+'.')
     } else {
-      alert('not null!')
+      console.log('A trade for '+symbol+' is open and is being closed at ' +currentPrice+ '.')
+
       // update account history
+      db.ref('/users/' +user+ '/mocktrades/history/').push ({
+        symbol: symbol,
+        dateClosed: today,
+        priceClosed: currentPrice,
+        dateOpened: 12122012,
+        priceOpened: 0.10,
+        profitLoss: 500.00,
+        tradeDaysLength: 23
+      })
 
       // delete holding
+      db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').remove(function(error) {
+        alert(error ? "Uh oh!" : "Success!")
+      })
+
 
     }
   })
