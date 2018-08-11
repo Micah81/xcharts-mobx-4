@@ -163,12 +163,10 @@ export const voteUnsure = (symbol, today, user) =>
     });
 })
 
-
 ///--------------------------------------------------------------------------------------
-// VOTING - MOCK TRADING API
+// Mock trading API
 export const mockBuy = (symbol, today, user, currentPrice) =>
   // does user already have a trade open for this symbol?
-  //db.ref(  '/users/' +user+ '/mocktrades/' +today+ '/' +symbol+ '/').once("value", function(snapshot) {
   db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
     if(snapshot.val()==null){
       // if not, buy it.
@@ -187,4 +185,19 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
     }
   }
 )
-// // if they do have a trade in this already open (find sym, compare dates), don't open another. Maybe this should be an option.
+
+export const mockSell = (symbol, today, user, currentPrice) =>
+  // does user already have a trade open for this symbol?
+  db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
+    if(snapshot.val()==null){
+      alert('null!')
+    } else {
+      alert('not null!')
+      // update account history
+
+      // delete holding
+
+    }
+  })
+
+// short / cover

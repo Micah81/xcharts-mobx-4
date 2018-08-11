@@ -23,11 +23,12 @@ class ChartStore {
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
+      db.mockSell(ActiveSymbol, today, User, this.currentPrice)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
-    }    
+    }
 
     // change activeSymbol
     this.n++
