@@ -212,8 +212,14 @@ export const mockSell = (symbol, today, user, currentPrice) =>
         profitLoss: currentPrice - snapshot.val().priceOpened,
         tradeDaysLength: today - snapshot.val().dateOpened
       }).then(()=>{
+        // remove trade from user's holdings
         db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').remove(function(error) {
           console.log(error ? "Trade not removed from holdings." : "Trade removed from holdings.")
+        })
+      }).then(()=>{
+        // add close action to the mocktrades
+        db.ref('/mocktrades/' +symbol+ '/' +today+ '/users/' +user+ '/').push({
+          priceClosed: currentPrice
         })
       })
     }
