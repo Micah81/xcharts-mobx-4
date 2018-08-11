@@ -186,9 +186,17 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
   }
 )
 
+
+
+/*
+deckRef.orderByKey().once('child_added', function(dataSnapshot) {
+      console.log(dataSnapshot.val());
+});
+*/
+
 export const mockSell = (symbol, today, user, currentPrice) =>
   // does user already have a trade open for this symbol?
-  db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
+  db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("child_added", function(snapshot) {
     if(snapshot.val()==null){
       console.log('No trade is currently open for '+symbol+'.')
     } else {
@@ -199,18 +207,15 @@ export const mockSell = (symbol, today, user, currentPrice) =>
         symbol: symbol,
         dateClosed: today,
         priceClosed: currentPrice,
-        dateOpened: 12122012,
-        priceOpened: 0.10,
-        profitLoss: 500.00,
-        tradeDaysLength: 23
+        dateOpened: snapshot.val().dateOpened,
+        priceOpened: snapshot.val().priceOpened,
+        profitLoss: currentPrice - snapshot.val().priceOpened,
+        tradeDaysLength: today - snapshot.val().dateOpened
+      }).then(()=>{
+        db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').remove(function(error) {
+          console.log(error ? "Trade not removed from holdings." : "Trade removed from holdings.")
+        })
       })
-
-      // delete holding
-      db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').remove(function(error) {
-        alert(error ? "Uh oh!" : "Success!")
-      })
-
-
     }
   })
 
