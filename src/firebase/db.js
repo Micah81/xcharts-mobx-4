@@ -163,35 +163,28 @@ export const voteUnsure = (symbol, today, user) =>
     });
 })
 
+
+///--------------------------------------------------------------------------------------
 // VOTING - MOCK TRADING API
 export const mockBuy = (symbol, today, user, currentPrice) =>
   // does user already have a trade open for this symbol?
   //db.ref(  '/users/' +user+ '/mocktrades/' +today+ '/' +symbol+ '/').once("value", function(snapshot) {
-  db.ref(  '/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
-    console.log('mockBuy snapshot: ',snapshot.val());
+  db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("value", function(snapshot) {
     if(snapshot.val()==null){
       // if not, buy it.
       db.ref('/mocktrades/' +symbol+ '/' +today+ '/users/' +user+ '/').push({
         priceOpened: currentPrice
       }).then(()=>{
-       db.ref('/users/'+user+ '/mocktrades/' +today+ '/' +symbol+ '/').push({
-         priceOpened: currentPrice
-       })
-    }).then(()=>{
      db.ref('/users/'+user+ '/mocktrades/holdings/' +symbol+ '/').push({
-       quantity: 1
+       quantity: 1,
+       priceOpened: currentPrice,
+       dateOpened: today
      })
   })
     }
     else {
       console.log('This user already traded this instrument on this day.')
-      snapshot.forEach(function(data) {
-        console.log('data.key: ',data.key)
-        db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/' +data.key+ '/').once("value", function(snapshot) {
-          console.log('maybe? ', snapshot.val().quantity)
-        })
-      })
     }
   }
 )
-// if they do have a trade in this already open (find sym, compare dates), don't open another. Maybe this should be an option.
+// // if they do have a trade in this already open (find sym, compare dates), don't open another. Maybe this should be an option.
