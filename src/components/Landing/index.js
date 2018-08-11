@@ -22,7 +22,6 @@ function LandingPage(props) {
 
   return (
     <div className={classes.root}>
-
       <Grid container spacing={24}>
         <MenuAppBar/>
         <Grid item xs={12}>

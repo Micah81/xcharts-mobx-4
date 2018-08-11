@@ -20,13 +20,9 @@ class ChartStore {
     try {
       const sdata = await ts.TopStocks(creds.credentials)
       runInAction(() => {
-        console.log('sdata:',sdata)
-        sdata.map(
-          (data) => (
-              this.allSymbols.push(data.symbol)
-            )
-          )
-        //this.allSymbols = sdata // too much data! Just symbols
+        sdata.map( (data) => (
+          this.allSymbols.push(data.symbol)
+        ) )
       })
     } catch (error) {
         runInAction(() => {
