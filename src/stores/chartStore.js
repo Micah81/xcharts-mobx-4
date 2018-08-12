@@ -61,9 +61,16 @@ class ChartStore {
     this.activeSymbol = this.allSymbols[this.n]
 
     // update chartData
+    // is there data for this symbol that was updated within the last 10 minutes?
+    // if so
+    // use it
+
+    // if not
+    // use api only if data not updated within 10 minutes
     try {
         const cdata = await api.fetchChartData(this.activeSymbol)
         runInAction(() => {
+            // put it into firebase with time stamp 
             this.chartData = cdata
             this.currentPrice = cdata[cdata.length-1].close
             //console.log('currentPrice of the NEW chart: ', this.currentPrice)
@@ -73,6 +80,9 @@ class ChartStore {
             console.log('Error in chartStore near //update chartData', error)
         })
     }
+
+
+
 }
 
   @observable chartData = [
