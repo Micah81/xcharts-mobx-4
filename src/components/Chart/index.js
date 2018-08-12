@@ -6,17 +6,27 @@ import { VictoryCandlestick } from 'victory';
 
 
 ////-------------------------------------------------------
-class CandlestickChart extends Component {
-  render() {
-    return (
-      <div>
+class CandlestickChart extends React.Component {
+  render () {
+    if(this.props.chartStore.chartData) {
+      return (
+        <div>
         <VictoryCandlestick
           data={this.props.chartStore.chartData.slice()}
         />
-      </div>
-    )
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <p>There was an error!</p>
+        </div>
+      );
+    }
   }
 }
+
+
 
 export default compose(
   inject('chartStore'),

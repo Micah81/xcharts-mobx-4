@@ -34,10 +34,15 @@ class ChartStore {
   @action
   async updateChart(ActiveSymbol, Vote, User) {
 
+
+    //when i push the button it needs to get the number of remaining symbols and if it's 0, dont try to get its data.
+
+
     // The first time this button is pushed, and only the first time,
     // run updateSymbolsArray()
     if (this.n === 0){
       this.updateSymbolsArray()
+      console.log('Updated symbols array, which should happen just once.')
     }
 
     // record vote
@@ -70,10 +75,18 @@ class ChartStore {
     try {
         const cdata = await api.fetchChartData(this.activeSymbol)
         runInAction(() => {
-            // put it into firebase with time stamp 
-            this.chartData = cdata
-            this.currentPrice = cdata[cdata.length-1].close
-            //console.log('currentPrice of the NEW chart: ', this.currentPrice)
+            // put it into firebase with time stamp
+
+            if ((this.chartData).length > 4){
+              this.chartData = cdata
+              this.currentPrice = cdata[cdata.length-1].close
+              console.log('currentPrice of the NEW chart: ', this.currentPrice)
+            } else {
+              alert('uh oh!')
+              this.n++
+              this.activeSymbol = this.allSymbols[this.n]
+              this.chartData = api.fetchChartData(this.activeSymbol)
+            }
         })
     } catch (error) {
         runInAction(() => {
