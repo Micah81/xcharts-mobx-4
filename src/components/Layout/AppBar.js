@@ -12,6 +12,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import { Component } from 'react';
+import { inject, observer } from 'mobx-react';
+import { compose } from 'recompose';
+import * as chgAuth from '../../firebase/auth';
 
 const styles = {
   root: {
@@ -25,7 +29,7 @@ const styles = {
     marginRight: 20,
   },
 };
-
+let initAuthState = true
 class MenuAppBar extends React.Component {
   state = {
     auth: true,
@@ -34,6 +38,7 @@ class MenuAppBar extends React.Component {
 
   handleChange = (event, checked) => {
     this.setState({ auth: checked });
+    chgAuth.doSignOut();
   };
 
   handleMenu = event => {
@@ -107,4 +112,9 @@ MenuAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(MenuAppBar);
+
+export default compose(
+  inject('chartStore', 'sessionStore'),
+  withStyles(styles),
+  observer
+)(MenuAppBar)
