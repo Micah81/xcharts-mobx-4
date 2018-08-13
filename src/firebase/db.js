@@ -167,6 +167,12 @@ export const voteBegin = (symbol, now, user) =>
   db.ref('/users/' +user+ '/begin/' +now+ '/').push({
     begin: true
   })
+  // When press begin, update with the user's symbols.
+
+///--------------------------------------------------------------------------------------
+// User Control Panel API
+
+
 
 ///--------------------------------------------------------------------------------------
 // Mock trading API
@@ -190,14 +196,6 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
     }
   }
 )
-
-
-
-/*
-deckRef.orderByKey().once('child_added', function(dataSnapshot) {
-      console.log(dataSnapshot.val());
-});
-*/
 
 export const mockSell = (symbol, today, user, currentPrice) =>
   // does user already have a trade open for this symbol?
