@@ -46,7 +46,7 @@ const ChartButtons = ({ chartStore, sessionStore }) => (
         <Button variant="contained" color="secondary"
         onClick={() => chartStore.updateChart(
             chartStore.activeSymbol,
-            'Unsure',
+            'Begin',
             sessionStore.authUser.uid
           )}>
           Begin

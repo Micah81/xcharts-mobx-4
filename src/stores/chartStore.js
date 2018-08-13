@@ -47,6 +47,7 @@ class ChartStore {
 
     // record vote
     var today = moment().format('MMDDYYYY');
+    var now = moment().format();
     if (Vote === 'Up') {
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
@@ -57,6 +58,8 @@ class ChartStore {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
+    } else if (Vote === 'Begin') {
+      db.voteBegin(ActiveSymbol, now, User)
     }
 
     // change activeSymbol

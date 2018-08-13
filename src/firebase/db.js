@@ -163,6 +163,11 @@ export const voteUnsure = (symbol, today, user) =>
     });
 })
 
+export const voteBegin = (symbol, now, user) =>
+  db.ref('/users/' +user+ '/begin/' +now+ '/').push({
+    begin: true
+  })
+
 ///--------------------------------------------------------------------------------------
 // Mock trading API
 export const mockBuy = (symbol, today, user, currentPrice) =>

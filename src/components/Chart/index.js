@@ -19,7 +19,8 @@ class CandlestickChart extends React.Component {
     } else {
       return (
         <div>
-          <p>There was an error!</p>
+          <p>There was an error getting the chartData:</p>
+          <p>{this.props.chartStore.chartData}</p>
         </div>
       );
     }
