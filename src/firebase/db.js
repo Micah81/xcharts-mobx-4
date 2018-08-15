@@ -173,7 +173,8 @@ export const getOpenTrades = (user, openTrades) =>
   snapshot.forEach(function(childSnapshot) {
     var childKey = childSnapshot.key
     var childData = childSnapshot.val()
-    openTrades.push(childKey)
+    //if(!hasDuplicates(childKey)){ openTrades.push(childKey) }
+    if(!openTrades.includes(childKey)){ openTrades.push(childKey) }
   })
 })
 

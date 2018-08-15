@@ -29,7 +29,13 @@ class ChartStore {
 
   @observable n = 0
 
-  @observable currentPrice = 10
+  @observable currentPrice = 10.00
+
+  @observable priceOpened = 1.00
+
+  @observable currentPrice = 1000.00
+
+  @observable dateOpened = '08152018'
 
   @action
   async updateSymbolsArray(){
