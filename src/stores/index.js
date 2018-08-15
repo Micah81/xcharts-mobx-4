@@ -5,7 +5,7 @@ import UserStore from './userStore';
 import CounterStore from './counterStore';
 import ChartStore from './chartStore';
 
-configure({ enforceActions: true });
+configure({ enforceActions: false });
 
 class RootStore {
   constructor() {

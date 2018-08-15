@@ -7,6 +7,22 @@ import * as creds from '../utils/robinhood/credentials';
 
 class ChartStore {
 
+  //----------------------------- accountStore --------------------
+
+  @observable accountBalance = 10000
+
+  //db.getAccountBalance(this.props.sessionStore.authUser.uid)
+
+  @observable openTrades = ['AMZN']
+
+  @action updateOpenTrades(User, openTrades) {
+    db.getOpenTrades(User, this.openTrades).then(function(data){
+      console.log('DATA! ',data)
+    })
+  }
+
+  //----------------------------------------------------------------
+
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
   @observable activeSymbol = 'NA'
@@ -48,18 +64,24 @@ class ChartStore {
     // record vote
     var today = moment().format('MMDDYYYY');
     var now = moment().format();
+
     if (Vote === 'Up') {
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
+      this.updateOpenTrades(User, this.openTrades)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
+      this.updateOpenTrades(User, this.openTrades)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
+      db.mockSell(ActiveSymbol, today, User, this.currentPrice)
+      this.updateOpenTrades(User, this.openTrades)
     } else if (Vote === 'Begin') {
       db.voteBegin(ActiveSymbol, now, User)
+      this.updateOpenTrades(User, this.openTrades)
     }
 
     // change activeSymbol
@@ -108,6 +130,7 @@ class ChartStore {
     {open: 20, close: 10, high: 25, low: 7},
     {open: 10, close: 8, high: 15, low: 5}
   ]
+
 
 
 

@@ -167,13 +167,42 @@ export const voteBegin = (symbol, now, user) =>
   db.ref('/users/' +user+ '/begin/' +now+ '/').push({
     begin: true
   })
-  // When press begin, update with the user's symbols.
+
+export const getOpenTrades = (user, openTrades) =>
+  db.ref('users/' +user+ '/mocktrades/holdings/').once('value', function(snapshot) {
+  snapshot.forEach(function(childSnapshot) {
+    var childKey = childSnapshot.key
+    var childData = childSnapshot.val()
+    openTrades.push(childKey)
+  })
+})
+
+  // When press begin, update symbols array with the user's symbols.
 
 ///--------------------------------------------------------------------------------------
 // User Control Panel API
 
-//export const getAccountBalance = (user) =>
-
+export const getAccountBalance = (user) =>
+  // does user already have a mock balance established?
+  db.ref('/users/' +user+ '/mocktrades/account/').once("value", function(snapshot) {
+    if(snapshot.val()==null){
+      // if not, establish their new mock account with $10,000
+      db.ref('/users/' +user+ '/mocktrades/account/').push({
+        balance: 10000
+      })
+      return (
+        db.ref('/users/' +user+ '/mocktrades/account/')
+      )
+    } else {
+      // if they do have an account, give me a sign ...
+      db.ref('/users/' +user+ '/mocktrades/account/').set({
+        balance: 5000
+      })
+      return (
+        db.ref('/users/' +user+ '/mocktrades/account/')
+      )
+    }
+  })
 
 ///--------------------------------------------------------------------------------------
 // Mock trading API
@@ -190,6 +219,8 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
        priceOpened: currentPrice,
        dateOpened: today
      })
+  }).then(() => {
+    this.getOpenTrades()
   })
     }
     else {

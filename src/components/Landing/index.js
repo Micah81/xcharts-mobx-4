@@ -7,13 +7,14 @@ import Grid from '@material-ui/core/Grid';
 import MenuAppBar from '../Layout/AppBar';
 import UserControlPanel1 from '../UserControlPanel/UserControlPanel1';
 import UserControlPanel2 from '../UserControlPanel/UserControlPanel2';
+import UserControlPanel3 from '../UserControlPanel/UserControlPanel3';
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 1,
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
@@ -27,26 +28,24 @@ function LandingPage(props) {
       <Grid container spacing={24}>
         <MenuAppBar/>
         <Grid item xs={12}>
-          <Paper className={classes.paper}><h3>Over the next three months, this chart is going...</h3></Paper>
-        </Grid>
-        <Grid item xs={12} sm={6}>
           <Paper className={classes.paper}><ChartButtons/></Paper>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={6} sm={3}>
           <Paper className={classes.paper}><CandlestickChart/></Paper>
         </Grid>
+
         <Grid item xs={6} sm={3}>
-          <Paper className={classes.paper}><UserControlPanel1/></Paper>
+          <Paper className={classes.paper}><UserControlPanel3/></Paper>
         </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper className={classes.paper}><UserControlPanel2/></Paper>
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper className={classes.paper}>xs=6 sm=3</Paper>
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <Paper className={classes.paper}>xs=6 sm=3</Paper>
-        </Grid>
+
+          <Grid item xs={6} sm={3}>
+            <Paper className={classes.paper}><UserControlPanel1/></Paper>
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <Paper className={classes.paper}><UserControlPanel2/></Paper>
+          </Grid>
+
+
       </Grid>
     </div>
   );

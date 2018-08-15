@@ -4,15 +4,19 @@ import { compose } from 'recompose';
 import { VictoryCandlestick } from 'victory';
 
 // stats
-class UserControlPanel2 extends React.Component {
+class UserControlPanel3 extends React.Component {
   render () {
     if(this.props.sessionStore.authUser) {
       return (
         <div>
-          <h3>Account</h3>
-          <p>${
-            (this.props.chartStore.accountBalance).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
-          }</p>
+          <h3>Open Trades</h3>
+          <ul>
+            {
+              (this.props.chartStore.openTrades).map((data) =>
+                <li>{data}</li>
+              )
+            }
+          </ul>
         </div>
       );
     } else {
@@ -30,4 +34,4 @@ class UserControlPanel2 extends React.Component {
 export default compose(
   inject('chartStore', 'sessionStore'),
   observer
-)(UserControlPanel2);
+)(UserControlPanel3);
