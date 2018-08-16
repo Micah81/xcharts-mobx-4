@@ -19,30 +19,12 @@ class ChartStore {
     createData('WMT', '8/15/2018', 9.00, 39.00, 30.00)
   ]
 
-  @action
-  async updateOpenTrades(User, rows){
-    try {
-      let otrades = []
-      /*
-        Here, it gets the whole function, and needs to
-        instead get the data returned by the function.
-      */
-      otrades = await db.getOpenTrades(User)
-      runInAction(() => {
-        console.log('otrades:',otrades)
-        /*
-          When it updates here, this data doesnt work
-          with the table. The data was good, but it becomes
-          a function.
-        */
-        this.rows = otrades
-        console.log('this.rows',this.rows)
-      })
-    } catch (error) {
-        runInAction(() => {
-            console.log('Error in chartStore in updateOpenTrades', error)
-        })
-    }
+  @action async updateRows(user){
+    this.rows = //await db.getOpenTrades(user)
+    [
+      createData('SQ', '8/11/2018', 100.00, 1400.00, 1300.00),
+      createData('AMD', '8/15/2018', 9.00, 39.00, 30.00)
+    ]
   }
 
   @observable accountBalance = 10000
@@ -69,13 +51,10 @@ class ChartStore {
     }
   }
 
+
   @action
   async updateChart(ActiveSymbol, Vote, User) {
-
-
-    //when i push the button it needs to get the number of remaining symbols and if it's 0, dont try to get its data.
-
-
+    // when i push the button it needs to get the number of remaining symbols and if it's 0, dont try to get its data.
     // The first time this button is pushed, and only the first time,
     // run updateSymbolsArray()
     if (this.n === 0){
@@ -87,10 +66,11 @@ class ChartStore {
     var today = moment().format('MMDDYYYY');
     var now = moment().format();
 
+
     if (Vote === 'Up') {
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
-      this.updateOpenTrades(User, this.rows)
+      this.updateRows(User)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
@@ -124,9 +104,9 @@ class ChartStore {
             if ((this.chartData).length > 4){
               this.chartData = cdata
               this.currentPrice = cdata[cdata.length-1].close
-              console.log('currentPrice of the NEW chart: ', this.currentPrice)
+              console.log('currentPrice (last price on current chart): ', this.currentPrice)
             } else {
-              alert('uh oh!')
+              console.log('Unable to get chartData, moving to next symbol.')
               this.n++
               this.activeSymbol = this.allSymbols[this.n]
               this.chartData = api.fetchChartData(this.activeSymbol)
@@ -149,8 +129,6 @@ class ChartStore {
     {open: 20, close: 10, high: 25, low: 7},
     {open: 10, close: 8, high: 15, low: 5}
   ]
-
-
 
 
   constructor(rootStore) {

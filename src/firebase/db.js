@@ -205,8 +205,6 @@ export const getOpenTrades = (user) =>
   })
 
 
-
-
 ///--------------------------------------------------------------------------------------
 // Mock trading API
 export const mockBuy = (symbol, today, user, currentPrice) =>
