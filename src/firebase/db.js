@@ -171,6 +171,11 @@ export const voteBegin = (symbol, now, user) =>
 ///--------------------------------------------------------------------------------------
 // User Control Panel API
 
+/*
+  These are the first two callback functions I've needed. The callback article will
+  help. I think I will need to add a callback to this sequence.
+*/
+
 export const getAccountBalance = (user) =>
   // does user already have a mock balance established?
   db.ref('/users/' +user+ '/mocktrades/account/').once("value", function(snapshot) {

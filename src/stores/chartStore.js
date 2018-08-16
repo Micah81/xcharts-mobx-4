@@ -24,16 +24,16 @@ class ChartStore {
     try {
       let otrades = []
       /*
-      Here, it gets the whole function, and needs to
-      instead get the data returned by the function.
+        Here, it gets the whole function, and needs to
+        instead get the data returned by the function.
       */
       otrades = await db.getOpenTrades(User)
       runInAction(() => {
         console.log('otrades:',otrades)
         /*
-        When it updates here, this data doesnt work
-        with the table. The data was good, but it becomes
-        a function.
+          When it updates here, this data doesnt work
+          with the table. The data was good, but it becomes
+          a function.
         */
         this.rows = otrades
         console.log('this.rows',this.rows)
