@@ -1,3 +1,4 @@
+import React from 'react';
 import { action, observable, runInAction } from 'mobx';
 import { db } from '../firebase';
 import moment from 'moment';
@@ -5,37 +6,42 @@ import * as api from '../utils/api';
 import * as ts from '../utils/robinhood/topStocks';
 import * as creds from '../utils/robinhood/credentials';
 
+let id = 0;
+function createData(symbol, date, cost, quote, pl) {
+  id += 1;
+  return { id, symbol, date, cost, quote, pl };
+}
+
 class ChartStore {
 
-  //----------------------------- accountStore --------------------
+  @observable rows = [
+    createData('AMZN', '8/11/2018', 100.00, 1400.00, 1300.00),
+    createData('WMT', '8/15/2018', 9.00, 39.00, 30.00)
+  ]
 
-  @observable accountBalance = 10000
-
-  //db.getAccountBalance(this.props.sessionStore.authUser.uid)
-
-  @observable openTrades = ['AMZN']
-
-  @action updateOpenTrades(User, openTrades) {
-    db.getOpenTrades(User, this.openTrades).then(function(data){
-      console.log('DATA! ',data)
-    })
+  @action
+  async updateOpenTrades(User, rows){
+    try {
+      let otrades = []
+      otrades = await db.getOpenTrades(User)
+      runInAction(() => {
+        this.rows = otrades
+        console.log('this.rows',this.rows)
+      })
+    } catch (error) {
+        runInAction(() => {
+            console.log('Error in chartStore in updateOpenTrades', error)
+        })
+    }
   }
 
-  //----------------------------------------------------------------
+  @observable accountBalance = 10000
 
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
   @observable activeSymbol = 'NA'
 
   @observable n = 0
-
-  @observable currentPrice = 10.00
-
-  @observable priceOpened = 1.00
-
-  @observable currentPrice = 1000.00
-
-  @observable dateOpened = '08152018'
 
   @action
   async updateSymbolsArray(){
@@ -74,20 +80,17 @@ class ChartStore {
     if (Vote === 'Up') {
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
-      this.updateOpenTrades(User, this.openTrades)
+      this.updateOpenTrades(User, this.rows)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
-      this.updateOpenTrades(User, this.openTrades)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
-      this.updateOpenTrades(User, this.openTrades)
     } else if (Vote === 'Begin') {
       db.voteBegin(ActiveSymbol, now, User)
-      this.updateOpenTrades(User, this.openTrades)
     }
 
     // change activeSymbol

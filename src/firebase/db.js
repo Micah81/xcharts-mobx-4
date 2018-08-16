@@ -13,7 +13,7 @@ export const onceGetUsers = () =>
 // Voting API
 export const voteUp = (symbol, today, user) =>
   db.ref('/votes/' +today+ '/' +symbol+ '/').child('voters').orderByChild('user').equalTo(user).on("value", function(snapshot) {
-    console.log(snapshot.val());
+    //console.log(snapshot.val());
     if(snapshot.val()==null){
       db.ref('/votes/' +today+ '/' +symbol+ '/voters/').push({
         user: user
@@ -168,18 +168,6 @@ export const voteBegin = (symbol, now, user) =>
     begin: true
   })
 
-export const getOpenTrades = (user, openTrades) =>
-  db.ref('users/' +user+ '/mocktrades/holdings/').once('value', function(snapshot) {
-  snapshot.forEach(function(childSnapshot) {
-    var childKey = childSnapshot.key
-    var childData = childSnapshot.val()
-    //if(!hasDuplicates(childKey)){ openTrades.push(childKey) }
-    if(!openTrades.includes(childKey)){ openTrades.push(childKey) }
-  })
-})
-
-  // When press begin, update symbols array with the user's symbols.
-
 ///--------------------------------------------------------------------------------------
 // User Control Panel API
 
@@ -205,6 +193,15 @@ export const getAccountBalance = (user) =>
     }
   })
 
+export const getOpenTrades = (user) =>
+  db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
+    console.log('snapshot:',snapshot.val())
+    return snapshot.val()
+  })
+
+
+
+
 ///--------------------------------------------------------------------------------------
 // Mock trading API
 export const mockBuy = (symbol, today, user, currentPrice) =>
@@ -220,8 +217,6 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
        priceOpened: currentPrice,
        dateOpened: today
      })
-  }).then(() => {
-    this.getOpenTrades()
   })
     }
     else {

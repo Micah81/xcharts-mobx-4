@@ -34,7 +34,7 @@ function LandingPage(props) {
           <Paper className={classes.paper}><CandlestickChart/></Paper>
         </Grid>
 
-        <Grid item xs={6} sm={3}>
+        <Grid item xs={6} sm={9}>
           <Paper className={classes.paper}><UserControlPanel3/></Paper>
         </Grid>
 
