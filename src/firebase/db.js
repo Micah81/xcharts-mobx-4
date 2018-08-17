@@ -1,4 +1,5 @@
 import { db } from './firebase';
+import * as sq from '../utils/robinhood/stockQuote';
 
 // User API
 export const doCreateUser = (id, username, email) =>
@@ -170,39 +171,30 @@ export const voteBegin = (symbol, now, user) =>
 
 ///--------------------------------------------------------------------------------------
 // User Control Panel API
+let id = 0;
+function createData(symbol, date, cost, quote, pl) {
+  id += 1;
+  //console.log(symbol, date, cost, quote, pl)
+  return { id, symbol, date, cost, quote, pl };
+}
 
-/*
-  These are the first two callback functions I've needed. The callback article will
-  help. I think I will need to add a callback to this sequence.
-*/
-
-export const getAccountBalance = (user) =>
-  // does user already have a mock balance established?
-  db.ref('/users/' +user+ '/mocktrades/account/').once("value", function(snapshot) {
-    if(snapshot.val()==null){
-      // if not, establish their new mock account with $10,000
-      db.ref('/users/' +user+ '/mocktrades/account/').push({
-        balance: 10000
+let returnArr = [];
+export function getOpenTrades(user){
+  db.ref('/users/' +user+ '/mocktrades/holdings/').once("value", function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      childSnapshot.forEach(function(item) {
+        let quote = sq.stockQuote(childSnapshot.key)
+        let itemVal = item.val()
+        let newData = createData(childSnapshot.key, itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
+        returnArr.push(newData);
       })
-      return (
-        db.ref('/users/' +user+ '/mocktrades/account/')
-      )
-    } else {
-      // if they do have an account, give me a sign ...
-      db.ref('/users/' +user+ '/mocktrades/account/').set({
-        balance: 5000
-      })
-      return (
-        db.ref('/users/' +user+ '/mocktrades/account/')
-      )
-    }
+    })
   })
-
-export const getOpenTrades = (user) =>
-  db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
-    console.log('snapshot:',snapshot.val())
-    return snapshot.val()
-  })
+  console.log('returnArr',returnArr)
+  return(
+      returnArr
+  )
+}
 
 
 ///--------------------------------------------------------------------------------------

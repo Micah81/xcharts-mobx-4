@@ -38,7 +38,6 @@ const styles = theme => ({
 
 const TableOpenTrades = ({ chartStore, sessionStore }) => (
       <Paper>
-      {console.log('chartStore.rows',chartStore.rows)}
         <Table>
           <TableHead>
             <TableRow>
@@ -56,10 +55,10 @@ const TableOpenTrades = ({ chartStore, sessionStore }) => (
                   <CustomTableCell component="th" scope="row">
                     {row.symbol}
                   </CustomTableCell>
-                  <CustomTableCell numeric>{row.date}</CustomTableCell>
-                  <CustomTableCell numeric>{row.cost}</CustomTableCell>
-                  <CustomTableCell numeric>{row.quote}</CustomTableCell>
-                  <CustomTableCell numeric>{row.pl}</CustomTableCell>
+                  <CustomTableCell>{row.date}</CustomTableCell>
+                  <CustomTableCell>{row.cost}</CustomTableCell>
+                  <CustomTableCell>{row.quote}</CustomTableCell>
+                  <CustomTableCell>{row.pl}</CustomTableCell>
                 </TableRow>
               );
             })}

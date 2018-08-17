@@ -1,4 +1,3 @@
-//import robinhood from 'robinhood'
 var promise;
 
 module.exports = {
@@ -11,7 +10,7 @@ module.exports = {
               }else{
                   //console.log("array sp500_up:");
                   //console.log("symbol: ",body.results[0].symbol);
-                  //console.log(body.results)
+                  //console.log('body.results:',body.results)
                   //resolve(body.results[0].symbol)
                   resolve(body.results)
               }

@@ -19,12 +19,15 @@ class ChartStore {
     createData('WMT', '8/15/2018', 9.00, 39.00, 30.00)
   ]
 
-  @action async updateRows(user){
-    this.rows = //await db.getOpenTrades(user)
-    [
-      createData('SQ', '8/11/2018', 100.00, 1400.00, 1300.00),
-      createData('AMD', '8/15/2018', 9.00, 39.00, 30.00)
-    ]
+  @action
+  async updateRows(user){
+    try {
+      this.rows = db.getOpenTrades(user)
+    } catch (error) {
+        runInAction(() => {
+            console.log('Error in chartStore in updateRows:', error)
+        })
+    }
   }
 
   @observable accountBalance = 10000
@@ -54,9 +57,6 @@ class ChartStore {
 
   @action
   async updateChart(ActiveSymbol, Vote, User) {
-    // when i push the button it needs to get the number of remaining symbols and if it's 0, dont try to get its data.
-    // The first time this button is pushed, and only the first time,
-    // run updateSymbolsArray()
     if (this.n === 0){
       this.updateSymbolsArray()
       console.log('Updated symbols array, which should happen just once.')
@@ -66,11 +66,10 @@ class ChartStore {
     var today = moment().format('MMDDYYYY');
     var now = moment().format();
 
-
     if (Vote === 'Up') {
+      this.updateRows(User)
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
-      this.updateRows(User)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
