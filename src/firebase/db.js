@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import * as sq from '../utils/robinhood/stockQuote';
+import * as creds from '../utils/robinhood/credentials';
 
 // User API
 export const doCreateUser = (id, username, email) =>
@@ -183,7 +184,7 @@ export function getOpenTrades(user){
   db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       childSnapshot.forEach(function(item) {
-        let quote = 1000 // sq.stockQuote(String(childSnapshot.key))
+        let quote = sq.stockQuote(String(childSnapshot.key), creds.credentials)
         //if(quote){console.log('quote:',quote)}
         let itemVal = item.val()
         let newData = createData(String(childSnapshot.key), itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)

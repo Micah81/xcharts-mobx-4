@@ -7,8 +7,7 @@ module.exports = {
             if(err){
                 console.error(err);
             }else{
-                console.log("quote_data");
-                console.log(body);
+                console.log(symbol,"quote_data:",body.results[0].last_trade_price);
                 //{
                 //    results: [
                 //        {
