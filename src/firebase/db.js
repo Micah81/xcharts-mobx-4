@@ -180,12 +180,13 @@ function createData(symbol, date, cost, quote, pl) {
 
 let returnArr = [];
 export function getOpenTrades(user){
-  db.ref('/users/' +user+ '/mocktrades/holdings/').once("value", function(snapshot) {
+  db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       childSnapshot.forEach(function(item) {
-        let quote = sq.stockQuote(childSnapshot.key)
+        let quote = 1000 // sq.stockQuote(String(childSnapshot.key))
+        //if(quote){console.log('quote:',quote)}
         let itemVal = item.val()
-        let newData = createData(childSnapshot.key, itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
+        let newData = createData(String(childSnapshot.key), itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
         returnArr.push(newData);
       })
     })
