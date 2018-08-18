@@ -46,7 +46,7 @@ export const voteUp = (symbol, today, user) =>
                });
           });
         } else {
-          console.log("This user already voted on this instrument on this day. Change chart state.")
+          console.log("This user already voted on this instrument on this day.")
         }
     });
 })
@@ -84,7 +84,7 @@ export const voteDown = (symbol, today, user) =>
                });
           });
         } else {
-          console.log("This user already voted on this instrument on this day. Change chart state.")
+          console.log("This user already voted on this instrument on this day.")
         }
     });
 })
@@ -122,7 +122,7 @@ export const voteSideways = (symbol, today, user) =>
                });
           });
         } else {
-          console.log("This user already voted on this instrument on this day. Change chart state.")
+          console.log("This user already voted on this instrument on this day.")
         }
     });
 })
@@ -160,7 +160,7 @@ export const voteUnsure = (symbol, today, user) =>
                });
           });
         } else {
-          console.log("This user already voted on this instrument on this day. Change chart state.")
+          console.log("This user already voted on this instrument on this day.")
         }
     });
 })
