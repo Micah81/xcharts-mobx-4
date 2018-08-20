@@ -5,6 +5,7 @@ import moment from 'moment';
 import * as api from '../utils/api';
 import * as ts from '../utils/robinhood/topStocks';
 import * as creds from '../utils/robinhood/credentials';
+import * as imo from '../utils/isMarketOpen';
 
 let id = 0;
 function createData(symbol, date, cost, quote, pl) {
@@ -16,9 +17,20 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
   return { id, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
 }
 
-
-
 class ChartStore {
+
+  @observable isMarketOpen = false;
+  @action updateIsMarketOpen(today){
+    try {
+      this.isMarketOpen = imo.isMarketOpen(today)
+    } catch (error) {
+        runInAction(() => {
+            console.log('Error in chartStore in updateIsMarketOpen:', error)
+        })
+    }
+  }
+
+
 
   @observable rows = [
     createData('AMZN', '8/11/2018', 100.00, 1400.00, 1300.00),
@@ -84,11 +96,12 @@ class ChartStore {
       console.log('Updated symbols array, which should happen just once.')
     }
 
-    // record vote
     var today = moment().format('MMDDYYYY');
     var now = moment().format();
 
+    // record vote
     if (Vote === 'Up') {
+      this.updateIsMarketOpen(today)
       this.updateRows(User)
       this.updateClosedTrades(User)
       db.voteUp(ActiveSymbol, today, User)
