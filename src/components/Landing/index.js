@@ -4,7 +4,6 @@ import ChartButtons from '../ChartButtons';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import MenuAppBar from '../Layout/AppBar';
 import UserControlPanel1 from '../UserControlPanel/UserControlPanel1';
 import UserControlPanel2 from '../UserControlPanel/UserControlPanel2';
 import UserControlPanel3 from '../UserControlPanel/UserControlPanel3';
@@ -27,7 +26,6 @@ function LandingPage(props) {
   return (
     <div className={classes.root}>
       <Grid container spacing={24}>
-        <MenuAppBar/>
         <Grid item xs={12}>
           <Paper className={classes.paper}><ChartButtons/></Paper>
         </Grid>

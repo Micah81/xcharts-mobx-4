@@ -8,7 +8,8 @@ import withAuthorization from '../Session/withAuthorization';
 
 const AccountPage = ({ sessionStore }) =>
   <div>
-    <h1>Account: {sessionStore.authUser.email}</h1>
+    <h1>Hello, {sessionStore.authUser.displayName}</h1>
+    <p>Account: {sessionStore.authUser.email}</p>    
     <PasswordForgetForm />
     <PasswordChangeForm />
   </div>
@@ -20,3 +21,8 @@ export default compose(
   inject('sessionStore'),
   observer
 )(AccountPage);
+
+
+// finding the avatar ... sessionStore.authUser. ->
+// refreshToken, uid, displayName, photoURL, email, emailVerified,
+// phoneNumber, isAnonymous, metadata, providerData

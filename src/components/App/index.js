@@ -13,10 +13,13 @@ import HomePage from '../Home';
 import AccountPage from '../Account';
 import withAuthentication from '../Session/withAuthentication';
 import * as routes from '../../constants/routes';
+import MenuAppBar from '../Layout/AppBar';
 
 import './index.css';
 
 const App = () =>
+<div>
+  <MenuAppBar/>
   <Router>
     <div className="app">
       <Navigation />
@@ -35,5 +38,5 @@ const App = () =>
       <span>Found in <a href="https://roadtoreact.com/course-details?courseId=TAMING_THE_STATE">Taming the State in React</a></span> | <span>Star the <a href="https://github.com/rwieruch/react-mobx-firebase-authentication">Repository</a></span> | <span>Receive a <a href="https://www.getrevue.co/profile/rwieruch">Developers Newsletter</a></span>
     </div>
   </Router>
-
+</div>
 export default withAuthentication(App);

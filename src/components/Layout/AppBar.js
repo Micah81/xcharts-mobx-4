@@ -38,7 +38,11 @@ class MenuAppBar extends React.Component {
 
   handleChange = (event, checked) => {
     this.setState({ auth: checked });
-    chgAuth.doSignOut();
+    if(checked){
+      chgAuth.doSignInWithEmailAndPassword();
+    } else {
+      chgAuth.doSignOut();
+    }
   };
 
   handleMenu = event => {
