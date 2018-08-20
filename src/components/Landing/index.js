@@ -1,5 +1,6 @@
 import React from 'react';
 import CandlestickChart from '../Chart';
+import ChartAcctHistory from '../ChartAcctHistory';
 import ChartButtons from '../ChartButtons';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -26,6 +27,11 @@ function LandingPage(props) {
   return (
     <div className={classes.root}>
       <Grid container spacing={24}>
+
+        <Grid item xs={3} sm={6}>
+          <Paper className={classes.paper}><ChartAcctHistory/></Paper>
+        </Grid>
+
         <Grid item xs={12}>
           <Paper className={classes.paper}><ChartButtons/></Paper>
         </Grid>

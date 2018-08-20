@@ -19,6 +19,13 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 
 class ChartStore {
 
+  @observable accountHistory = [
+    { x: new Date(1986, 1, 1), y: 10000 },
+    { x: new Date(1996, 1, 1), y: 10300 },
+    { x: new Date(2006, 1, 1), y: 10200 },
+    { x: new Date(2016, 1, 1), y: 10500 }
+  ]
+
   @observable isMarketOpen = false;
   @action updateIsMarketOpen(today){
     try {
@@ -29,8 +36,6 @@ class ChartStore {
         })
     }
   }
-
-
 
   @observable rows = [
     createData('AMZN', '8/11/2018', 100.00, 1400.00, 1300.00),
