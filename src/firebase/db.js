@@ -175,8 +175,11 @@ export const voteBegin = (symbol, now, user) =>
 let id = 0;
 function createData(symbol, date, cost, quote, pl) {
   id += 1;
-  //console.log(symbol, date, cost, quote, pl)
   return { id, symbol, date, cost, quote, pl };
+}
+function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl) {
+  id += 1;
+  return { id, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
 }
 
 let returnArr = [];
@@ -184,7 +187,7 @@ export function getOpenTrades(user){
   db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       childSnapshot.forEach(function(item) {
-        let quote = sq.stockQuote(String(childSnapshot.key), creds.credentials)
+        let quote = 1000 // sq.stockQuote(String(childSnapshot.key), creds.credentials)
         //if(quote){console.log('quote:',quote)}
         let itemVal = item.val()
         let newData = createData(String(childSnapshot.key), itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
@@ -195,6 +198,20 @@ export function getOpenTrades(user){
   console.log('returnArr',returnArr)
   return(
       returnArr
+  )
+}
+
+let returnArr2 = [];
+export function getClosedTrades(user){
+  db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      let itemVal = childSnapshot.val()
+      let newData = createDataClosedTrades( itemVal.symbol, itemVal.dateOpened, itemVal.priceOpened, itemVal.dateClosed, itemVal.priceClosed, itemVal.profitLoss )
+        returnArr2.push(newData);
+    })
+  })
+  return(
+      returnArr2
   )
 }
 

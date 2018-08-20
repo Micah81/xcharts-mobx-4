@@ -11,6 +11,12 @@ function createData(symbol, date, cost, quote, pl) {
   id += 1;
   return { id, symbol, date, cost, quote, pl };
 }
+function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl) {
+  id += 1;
+  return { id, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
+}
+
+
 
 class ChartStore {
 
@@ -26,6 +32,22 @@ class ChartStore {
     } catch (error) {
         runInAction(() => {
             console.log('Error in chartStore in updateRows:', error)
+        })
+    }
+  }
+
+  @observable closedTrades = [
+    createDataClosedTrades('ZOES', '8/11/2018', 100.00, '8/14/2018', 1400.00, 1300.00),
+    createDataClosedTrades('IZEA', '8/15/2018', 9.00,   '8/17/2018', 39.00,   30.00)
+  ]
+
+  @action
+  async updateClosedTrades(user){
+    try {
+      this.closedTrades = db.getClosedTrades(user)
+    } catch (error) {
+        runInAction(() => {
+            console.log('Error in chartStore in updateClosedTrades:', error)
         })
     }
   }
@@ -68,6 +90,7 @@ class ChartStore {
 
     if (Vote === 'Up') {
       this.updateRows(User)
+      this.updateClosedTrades(User)
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
     } else if (Vote ==='Down') {

@@ -8,6 +8,7 @@ import MenuAppBar from '../Layout/AppBar';
 import UserControlPanel1 from '../UserControlPanel/UserControlPanel1';
 import UserControlPanel2 from '../UserControlPanel/UserControlPanel2';
 import UserControlPanel3 from '../UserControlPanel/UserControlPanel3';
+import UserControlPanel4 from '../UserControlPanel/UserControlPanel4';
 
 const styles = theme => ({
   root: {
@@ -35,8 +36,14 @@ function LandingPage(props) {
         </Grid>
 
         <Grid item xs={6} sm={9}>
+          <Paper className={classes.paper}><UserControlPanel4/></Paper>
+        </Grid>
+
+        <Grid item xs={6} sm={9}>
           <Paper className={classes.paper}><UserControlPanel3/></Paper>
         </Grid>
+
+
 
           <Grid item xs={6} sm={3}>
             <Paper className={classes.paper}><UserControlPanel1/></Paper>
