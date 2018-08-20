@@ -21,10 +21,19 @@ class ChartStore {
 
   @observable accountHistory = [
     { x: new Date(1986, 1, 1), y: 10000 },
-    { x: new Date(1996, 1, 1), y: 10300 },
-    { x: new Date(2006, 1, 1), y: 10200 },
-    { x: new Date(2016, 1, 1), y: 10500 }
+    { x: new Date(1996, 1, 1), y: 6300 },
+    { x: new Date(2006, 1, 1), y: 8200 },
+    { x: new Date(2016, 1, 1), y: 15500 }
   ]
+  @action updateAccountHistory(user){
+    try {
+      this.accountHistory= db.updateAcctHistory(user)
+    } catch (error) {
+        runInAction(() => {
+            console.log('Error in chartStore in updateAccountHistory:', error)
+        })
+    }
+  }
 
   @observable isMarketOpen = false;
   @action updateIsMarketOpen(today){

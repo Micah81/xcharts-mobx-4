@@ -215,6 +215,26 @@ export function getClosedTrades(user){
   )
 }
 
+let returnArr3 = [];
+export function updateAcctHistory(user){
+  db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      let newData =  [
+        { x: new Date(1986, 1, 1), y: 20000 },
+        { x: new Date(1996, 1, 1), y: 3500 },
+        { x: new Date(2006, 1, 1), y: 82000 },
+        { x: new Date(2016, 1, 1), y: 60000 }
+      ]
+      //let itemVal = childSnapshot.val()
+      //let newData = createDataClosedTrades( itemVal.symbol, itemVal.dateOpened, itemVal.priceOpened, itemVal.dateClosed, itemVal.priceClosed, itemVal.profitLoss )
+        returnArr3.push(newData);
+    })
+  })
+  return(
+      returnArr3
+  )
+}
+
 
 ///--------------------------------------------------------------------------------------
 // Mock trading API
@@ -269,5 +289,3 @@ export const mockSell = (symbol, today, user, currentPrice) =>
       })
     }
   })
-
-// short / cover
