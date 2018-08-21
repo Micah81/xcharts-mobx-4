@@ -186,7 +186,7 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 let id3 = 0;
 function createDataAcctHistory(dateClosed, tradeProfitLoss) {
   id3 +=1;
-  console.log('id3, dateClosed, tradeProfitLoss:',id3, dateClosed, tradeProfitLoss)
+  //console.log('id3, dateClosed, tradeProfitLoss:',id3, dateClosed, tradeProfitLoss)
   return { id3, dateClosed, tradeProfitLoss};
 }
 
@@ -225,25 +225,59 @@ export function getClosedTrades(user){
   )
 }
 
+/*
+  1. Define the first data using the date range
+  2. Get a list of ALL the closed trades
+    3. for each date, get a list of ALL the trades closed on that day
+      4. Add up the p/l in a single variable named dateTotal
+        5. Then pass the date and the dateTotal into the createDataAcctHistory function.
+*/
 let returnArr3 = [];
 export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
   returnArr3.length = 0
-// use the time frame settings to determine the first date to filter
-let firstDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).calendar();
   let j = 0
-  while(j <= acctHistNumPeriods) {
-    //console.log('j:',j)
-    // i think this needs to contain the db.ref so it can filter by the dates
+  let activeDate
+  let dateTotal = 0;
+  activeDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
+  while(j < acctHistNumPeriods) {
     db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
+      let itemVal, newData
+
+
+      //console.log('activeDate1:',activeDate)
+
       snapshot.forEach(function(childSnapshot) {
-        //console.log('childSnapshot.val():',childSnapshot.val())
-        let itemVal = childSnapshot.val()
-        let newData = createDataAcctHistory( itemVal.dateClosed, itemVal.profitLoss )
-          returnArr3.push(newData);
+
+        itemVal = childSnapshot.val()
+        //console.log('itemVal:',itemVal)
+
+        let newDateClosed = moment(itemVal.dateClosed, "MMDDYYYY").format('L');
+        //console.log('newDateClosed:',newDateClosed)
+
+        if(activeDate < newDateClosed){
+          activeDate = newDateClosed
+        }
+
+        if(newDateClosed == activeDate){
+          dateTotal = dateTotal + itemVal.profitLoss
+          console.log('-------------------------------')
+          console.log('activeDate2:',activeDate)
+          console.log('newDateClosed:',newDateClosed)
+          console.log('itemVal.profitLoss:',itemVal.profitLoss)
+          console.log('dateTotal:',dateTotal)
+          console.log('-------------------------------')
+          activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
+          return
+        } else {
+          //console.log('activeDate3:',activeDate)
+          activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
+          return
+        }
       })
+      newData = createDataAcctHistory( itemVal.dateClosed, dateTotal )
+        returnArr3.push(newData);
     })
-    ///////////////////////////////////////////////////////////////
-    j++
+    j++ // if removed, it freezes
   }
   return(
       //returnArr3
