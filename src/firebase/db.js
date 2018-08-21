@@ -1,6 +1,7 @@
 import { db } from './firebase';
 import * as sq from '../utils/robinhood/stockQuote';
 import * as creds from '../utils/robinhood/credentials';
+import moment from 'moment';
 
 // User API
 export const doCreateUser = (id, username, email) =>
@@ -177,9 +178,16 @@ function createData(symbol, date, cost, quote, pl) {
   id += 1;
   return { id, symbol, date, cost, quote, pl };
 }
+let id2 = 0;
 function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl) {
-  id += 1;
-  return { id, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
+  id2 += 1;
+  return { id2, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
+}
+let id3 = 0;
+function createDataAcctHistory(dateClosed, tradeProfitLoss) {
+  id3 +=1;
+  console.log('id3, dateClosed, tradeProfitLoss:',id3, dateClosed, tradeProfitLoss)
+  return { id3, dateClosed, tradeProfitLoss};
 }
 
 let returnArr = [];
@@ -218,23 +226,33 @@ export function getClosedTrades(user){
 }
 
 let returnArr3 = [];
-export function updateAcctHistory(user){
+export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
   returnArr3.length = 0
-  db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
-    snapshot.forEach(function(childSnapshot) {
-      let newData =  [
+// use the time frame settings to determine the first date to filter
+let firstDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).calendar();
+  let j = 0
+  while(j <= acctHistNumPeriods) {
+    //console.log('j:',j)
+    // i think this needs to contain the db.ref so it can filter by the dates
+    db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        //console.log('childSnapshot.val():',childSnapshot.val())
+        let itemVal = childSnapshot.val()
+        let newData = createDataAcctHistory( itemVal.dateClosed, itemVal.profitLoss )
+          returnArr3.push(newData);
+      })
+    })
+    ///////////////////////////////////////////////////////////////
+    j++
+  }
+  return(
+      //returnArr3
+      [
         { x: new Date(1986, 1, 1), y: 20000 },
         { x: new Date(1996, 1, 1), y: 3500 },
         { x: new Date(2006, 1, 1), y: 82000 },
         { x: new Date(2016, 1, 1), y: 60000 }
       ]
-      //let itemVal = childSnapshot.val()
-      //let newData = createDataClosedTrades( itemVal.symbol, itemVal.dateOpened, itemVal.priceOpened, itemVal.dateClosed, itemVal.priceClosed, itemVal.profitLoss )
-        returnArr3.push(newData);
-    })
-  })
-  return(
-      returnArr3
   )
 }
 

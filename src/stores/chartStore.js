@@ -19,15 +19,17 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 
 class ChartStore {
 
+  @observable acctHistNumPeriods = 90
+  @observable acctHistTimeFrame = 'days'
   @observable accountHistory = [
     { x: new Date(1986, 1, 1), y: 10000 },
     { x: new Date(1996, 1, 1), y: 6300 },
     { x: new Date(2006, 1, 1), y: 8200 },
     { x: new Date(2016, 1, 1), y: 15500 }
   ]
-  @action updateAccountHistory(user){
+  @action updateAccountHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
     try {
-      this.accountHistory= db.updateAcctHistory(user)
+      this.accountHistory= db.updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame)
     } catch (error) {
         runInAction(() => {
             console.log('Error in chartStore in updateAccountHistory:', error)
@@ -120,6 +122,7 @@ class ChartStore {
       this.updateClosedTrades(User)
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
@@ -130,6 +133,7 @@ class ChartStore {
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
     } else if (Vote === 'Begin') {
       db.voteBegin(ActiveSymbol, now, User)
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame)
     }
 
     // change activeSymbol
