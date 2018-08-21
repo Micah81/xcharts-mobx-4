@@ -184,6 +184,7 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 
 let returnArr = [];
 export function getOpenTrades(user){
+  returnArr.length = 0
   db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       childSnapshot.forEach(function(item) {
@@ -203,6 +204,7 @@ export function getOpenTrades(user){
 
 let returnArr2 = [];
 export function getClosedTrades(user){
+  returnArr2.length = 0
   db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       let itemVal = childSnapshot.val()
@@ -217,6 +219,7 @@ export function getClosedTrades(user){
 
 let returnArr3 = [];
 export function updateAcctHistory(user){
+  returnArr3.length = 0
   db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       let newData =  [
