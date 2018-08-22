@@ -186,7 +186,6 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 let id3 = 0;
 function createDataAcctHistory(dateClosed, tradeProfitLoss) {
   id3 +=1;
-  //console.log('id3, dateClosed, tradeProfitLoss:',id3, dateClosed, tradeProfitLoss)
   return { id3, dateClosed, tradeProfitLoss};
 }
 
@@ -236,48 +235,66 @@ let returnArr3 = [];
 export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
   returnArr3.length = 0
   let j = 0
-  let activeDate
-  let dateTotal = 0;
-  activeDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
+  let activeDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
+  let dataArray = []
   while(j < acctHistNumPeriods) {
-    db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
+    db.ref('/users/' +user+ '/mocktrades/history/').orderByChild('dateClosed').on("value", function(snapshot) {
       let itemVal, newData
-
-
-      //console.log('activeDate1:',activeDate)
+      let arr = [];
+      let obj = {};
 
       snapshot.forEach(function(childSnapshot) {
 
         itemVal = childSnapshot.val()
-        //console.log('itemVal:',itemVal)
-
         let newDateClosed = moment(itemVal.dateClosed, "MMDDYYYY").format('L');
-        //console.log('newDateClosed:',newDateClosed)
 
         if(activeDate < newDateClosed){
           activeDate = newDateClosed
         }
 
         if(newDateClosed == activeDate){
-          dateTotal = dateTotal + itemVal.profitLoss
+          //dateTotal = dateTotal + itemVal.profitLoss
           console.log('-------------------------------')
           console.log('activeDate2:',activeDate)
           console.log('newDateClosed:',newDateClosed)
           console.log('itemVal.profitLoss:',itemVal.profitLoss)
-          console.log('dateTotal:',dateTotal)
+
+          obj.date = activeDate
+          obj.profitLoss = itemVal.profitLoss
+
+          console.log(arr.includes(obj.date == activeDate));
+
+          if(!arr.includes(obj.date == activeDate)){
+            arr.push(obj)
+          }
+
+          console.log('arr:',arr)
+
+          /*
+            let res = dataArray.filter(item => item.date == String(activeDate));
+            if(res) {
+              dataArray.push(
+                {
+                  date: activeDate
+                }
+              )
+            }
+            console.log('dataArray:',dataArray)
+          */
+
           console.log('-------------------------------')
+
           activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
           return
         } else {
-          //console.log('activeDate3:',activeDate)
           activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
           return
         }
       })
-      newData = createDataAcctHistory( itemVal.dateClosed, dateTotal )
+      newData = createDataAcctHistory( itemVal.dateClosed, 10 )
         returnArr3.push(newData);
     })
-    j++ // if removed, it freezes
+    j++
   }
   return(
       //returnArr3
