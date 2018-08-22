@@ -236,54 +236,38 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
   returnArr3.length = 0
   let j = 0
   let activeDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
-  let dataArray = []
+  let datesUsedArray = []
   while(j < acctHistNumPeriods) {
     db.ref('/users/' +user+ '/mocktrades/history/').orderByChild('dateClosed').on("value", function(snapshot) {
       let itemVal, newData
       let arr = [];
       let obj = {};
-
       snapshot.forEach(function(childSnapshot) {
-
         itemVal = childSnapshot.val()
         let newDateClosed = moment(itemVal.dateClosed, "MMDDYYYY").format('L');
-
         if(activeDate < newDateClosed){
           activeDate = newDateClosed
         }
-
         if(newDateClosed == activeDate){
           //dateTotal = dateTotal + itemVal.profitLoss
           console.log('-------------------------------')
           console.log('activeDate2:',activeDate)
           console.log('newDateClosed:',newDateClosed)
           console.log('itemVal.profitLoss:',itemVal.profitLoss)
-
           obj.date = activeDate
           obj.profitLoss = itemVal.profitLoss
-
-          console.log(arr.includes(obj.date == activeDate));
-
+          let res = datesUsedArray.includes(activeDate);
+          if(!res) {
+            datesUsedArray.push(
+              activeDate
+            )
+          }
+          console.log('datesUsedArray:',datesUsedArray)
           if(!arr.includes(obj.date == activeDate)){
             arr.push(obj)
           }
 
-          console.log('arr:',arr)
-
-          /*
-            let res = dataArray.filter(item => item.date == String(activeDate));
-            if(res) {
-              dataArray.push(
-                {
-                  date: activeDate
-                }
-              )
-            }
-            console.log('dataArray:',dataArray)
-          */
-
           console.log('-------------------------------')
-
           activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
           return
         } else {
@@ -291,8 +275,8 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
           return
         }
       })
-      newData = createDataAcctHistory( itemVal.dateClosed, 10 )
-        returnArr3.push(newData);
+      //newData = createDataAcctHistory( itemVal.dateClosed, 10 )
+        //returnArr3.push(newData);
     })
     j++
   }
