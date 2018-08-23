@@ -243,7 +243,6 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
   while(j < acctHistNumPeriods) {
     db.ref('/users/' +user+ '/mocktrades/history/').orderByChild('dateClosed').on("value", function(snapshot) {
       let itemVal, newData, thisIndex
-      //let obj = {};
       snapshot.forEach(function(childSnapshot) {
         itemVal = childSnapshot.val()
         let newDateClosed = moment(itemVal.dateClosed, "MMDDYYYY").format('L');
@@ -259,10 +258,20 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
             totalsArray.push(itemVal.profitLoss)
           } else {
             // THAT DATE IS ALREADY IN THE ARRAY, SO DONT ADD THE DATE, BUT DO SUM THE P/L
-            // I could jump right to the index with j, but j has already jumped to 90!
-
+            // get the index of the date,
+            console.log('activeDate:',activeDate)
+            //let index = 0;
+            let index = datesUsedArray.indexOf(activeDate)
+            // use that index to get the p/l
+            console.log('itemVal.profitLoss',itemVal.profitLoss)
+            let profit = totalsArray[index]
+            console.log('profit:',profit)
+            let newTotal = profit + itemVal.profitLoss
+            console.log('newTotal:',newTotal)
+            totalsArray[index] = newTotal
           }
           console.log('datesUsedArray:',datesUsedArray)
+          console.log('totalsArray:',totalsArray)
           console.log('-------------------------------')
         }
       })
