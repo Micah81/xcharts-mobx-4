@@ -235,13 +235,15 @@ let returnArr3 = [];
 export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
   returnArr3.length = 0
   let j = 0
+  let k = 0
   let activeDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
   let datesUsedArray = []
+  let totalsArray = []
+  let indexArray = []
   while(j < acctHistNumPeriods) {
     db.ref('/users/' +user+ '/mocktrades/history/').orderByChild('dateClosed').on("value", function(snapshot) {
-      let itemVal, newData
-      let arr = [];
-      let obj = {};
+      let itemVal, newData, thisIndex
+      //let obj = {};
       snapshot.forEach(function(childSnapshot) {
         itemVal = childSnapshot.val()
         let newDateClosed = moment(itemVal.dateClosed, "MMDDYYYY").format('L');
@@ -249,30 +251,19 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
           activeDate = newDateClosed
         }
         if(newDateClosed == activeDate){
-          //dateTotal = dateTotal + itemVal.profitLoss
           console.log('-------------------------------')
-          console.log('activeDate2:',activeDate)
-          console.log('newDateClosed:',newDateClosed)
-          console.log('itemVal.profitLoss:',itemVal.profitLoss)
-          obj.date = activeDate
-          obj.profitLoss = itemVal.profitLoss
           let res = datesUsedArray.includes(activeDate);
+          // IF NOT IN ARRAY, PUT IT IN THERE ...
           if(!res) {
-            datesUsedArray.push(
-              activeDate
-            )
+            datesUsedArray.push(activeDate)
+            totalsArray.push(itemVal.profitLoss)
+          } else {
+            // THAT DATE IS ALREADY IN THE ARRAY, SO DONT ADD THE DATE, BUT DO SUM THE P/L
+            // I could jump right to the index with j, but j has already jumped to 90!
+
           }
           console.log('datesUsedArray:',datesUsedArray)
-          if(!arr.includes(obj.date == activeDate)){
-            arr.push(obj)
-          }
-
           console.log('-------------------------------')
-          activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
-          return
-        } else {
-          activeDate = newDateClosed = moment(activeDate, "MMDDYYYY").add(1, 'day').format('L');
-          return
         }
       })
       //newData = createDataAcctHistory( itemVal.dateClosed, 10 )
