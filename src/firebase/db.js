@@ -186,6 +186,7 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 let id3 = 0;
 function createDataAcctHistory(dateClosed, tradeProfitLoss) {
   id3 +=1;
+  console.log('id3, dateClosed, tradeProfitLoss:',id3,' ',dateClosed,' ',tradeProfitLoss)
   return { id3, dateClosed, tradeProfitLoss};
 }
 
@@ -224,63 +225,73 @@ export function getClosedTrades(user){
   )
 }
 
-/*
-  1. Define the first data using the date range
-  2. Get a list of ALL the closed trades
-    3. for each date, get a list of ALL the trades closed on that day
-      4. Add up the p/l in a single variable named dateTotal
-        5. Then pass the date and the dateTotal into the createDataAcctHistory function.
-*/
+
 let returnArr3 = [];
 export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
   returnArr3.length = 0
-  let j = 0
-  let k = 0
-  let activeDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
-  let datesUsedArray = []
-  let totalsArray = []
-  let indexArray = []
-  while(j < acctHistNumPeriods) {
-    db.ref('/users/' +user+ '/mocktrades/history/').orderByChild('dateClosed').on("value", function(snapshot) {
-      let itemVal, newData, thisIndex
+  // I know their time frame. The chart only needs the data points within that time frame.
+    let timeFrame = acctHistNumPeriods // 30 (days)
+  // What are the first date of the time frame?
+    let firstDate = moment().subtract(acctHistNumPeriods, acctHistTimeFrame).format('L');
+    let dupsArray = []
+    let children
+  // How many data points are there?
+    db.ref('/users/' +user+ '/mocktrades/history/')
+    .orderByChild('dateClosed')
+    .startAt(firstDate)
+    .on("value", function(snapshot) {
+      //console.log(snapshot.val())
+      //console.log('Data points:',snapshot.numChildren())
+      children = snapshot.numChildren()
       snapshot.forEach(function(childSnapshot) {
-        itemVal = childSnapshot.val()
-        let newDateClosed = moment(itemVal.dateClosed, "MMDDYYYY").format('L');
-        if(activeDate < newDateClosed){
-          activeDate = newDateClosed
-        }
-        if(newDateClosed == activeDate){
-          console.log('-------------------------------')
-          let res = datesUsedArray.includes(activeDate);
-          // IF NOT IN ARRAY, PUT IT IN THERE ...
-          if(!res) {
-            datesUsedArray.push(activeDate)
-            totalsArray.push(itemVal.profitLoss)
+        let itemVal = childSnapshot.val()
+        //console.log('itemVal.dateClosed:',itemVal.dateClosed)
+          // Get a total p/l for each date
+          console.log('--------------------------------------')
+          console.log('itemVal.dateClosed:',itemVal.dateClosed)
+          console.log('dupsArray1:',dupsArray)
+          let inDupsArray = dupsArray.includes(itemVal.dateClosed);
+          if(inDupsArray){
+            console.log('DATE IS ALREADY IN THIS ARRAY')
+            children--
+            let newTotal = itemVal.profitLoss + dupsArray[1]
+            dupsArray[1] = newTotal
+            console.log('dupsArray2:',dupsArray)
+            console.log('children:',children)
+            if(children===0){
+              let res = createDataAcctHistory( dupsArray[0], dupsArray[1] )
+              returnArr3.push(res)
+            }
           } else {
-            // THAT DATE IS ALREADY IN THE ARRAY, SO DONT ADD THE DATE, BUT DO SUM THE P/L
-            // get the index of the date,
-            console.log('activeDate:',activeDate)
-            //let index = 0;
-            let index = datesUsedArray.indexOf(activeDate)
-            // use that index to get the p/l
-            console.log('itemVal.profitLoss',itemVal.profitLoss)
-            let profit = totalsArray[index]
-            console.log('profit:',profit)
-            let newTotal = profit + itemVal.profitLoss
-            console.log('newTotal:',newTotal)
-            totalsArray[index] = newTotal
+            console.log('DATE IS NOT IN THE ARRAY')
+              children--
+              // process the previous, if any exists
+                //console.log('dupsArray[0]:',dupsArray[0])
+                if( dupsArray.length!=0  &&  dupsArray[0]!=undefined) {
+                  console.log('Condition 1')
+                  let res = createDataAcctHistory( dupsArray[0], dupsArray[1] )
+                  returnArr3.push(res)
+                  dupsArray.length=0
+                  dupsArray[0] = itemVal.dateClosed
+                  dupsArray[1] = itemVal.profitLoss
+                } else if (dupsArray.length===0){
+                  console.log('Condition 2')
+                  dupsArray[0] = itemVal.dateClosed
+                  dupsArray[1] = itemVal.profitLoss
+                } else {
+                  console.log('Condition 3')
+                  // clear the array
+                    dupsArray.length = 0
+                    // input new data to array
+                      dupsArray[0] = itemVal.dateClosed
+                      dupsArray[1] = itemVal.profitLoss
+                      console.log('dupsArray3:',dupsArray)
+                }
           }
-          console.log('datesUsedArray:',datesUsedArray)
-          console.log('totalsArray:',totalsArray)
-          console.log('-------------------------------')
-        }
       })
-      //newData = createDataAcctHistory( itemVal.dateClosed, 10 )
-        //returnArr3.push(newData);
     })
-    j++
-  }
   return(
+      console.log('returnArr3:',returnArr3)
       //returnArr3
       [
         { x: new Date(1986, 1, 1), y: 20000 },
@@ -290,6 +301,8 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
       ]
   )
 }
+
+
 
 
 ///--------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
 
 class ChartStore {
 
-  @observable acctHistNumPeriods = 15
+  @observable acctHistNumPeriods = 30
   @observable acctHistTimeFrame = 'days'
   @observable accountHistory = [
     { x: new Date(1986, 1, 1), y: 10000 },
