@@ -183,11 +183,9 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
   id2 += 1;
   return { id2, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
 }
-let id3 = 0;
+
 function createDataAcctHistory(dateClosed, tradeProfitLoss) {
-  id3 +=1;
-  console.log('id3, dateClosed, tradeProfitLoss:',id3,' ',dateClosed,' ',tradeProfitLoss)
-  return { id3, dateClosed, tradeProfitLoss};
+    return { x: String(dateClosed), y: parseFloat(tradeProfitLoss.toFixed(2)) }
 }
 
 let returnArr = [];
@@ -240,12 +238,9 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
     .orderByChild('dateClosed')
     .startAt(firstDate)
     .on("value", function(snapshot) {
-      //console.log(snapshot.val())
-      //console.log('Data points:',snapshot.numChildren())
       children = snapshot.numChildren()
       snapshot.forEach(function(childSnapshot) {
         let itemVal = childSnapshot.val()
-        //console.log('itemVal.dateClosed:',itemVal.dateClosed)
           // Get a total p/l for each date
           console.log('--------------------------------------')
           console.log('itemVal.dateClosed:',itemVal.dateClosed)
@@ -261,16 +256,17 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
             if(children===0){
               let res = createDataAcctHistory( dupsArray[0], dupsArray[1] )
               returnArr3.push(res)
+              console.log('returnArr3:',returnArr3)
             }
           } else {
             console.log('DATE IS NOT IN THE ARRAY')
               children--
               // process the previous, if any exists
-                //console.log('dupsArray[0]:',dupsArray[0])
                 if( dupsArray.length!=0  &&  dupsArray[0]!=undefined) {
                   console.log('Condition 1')
                   let res = createDataAcctHistory( dupsArray[0], dupsArray[1] )
                   returnArr3.push(res)
+                  console.log('returnArr3:',returnArr3)
                   dupsArray.length=0
                   dupsArray[0] = itemVal.dateClosed
                   dupsArray[1] = itemVal.profitLoss
@@ -280,7 +276,6 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
                   dupsArray[1] = itemVal.profitLoss
                 } else {
                   console.log('Condition 3')
-                  // clear the array
                     dupsArray.length = 0
                     // input new data to array
                       dupsArray[0] = itemVal.dateClosed
@@ -291,14 +286,14 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
       })
     })
   return(
-      console.log('returnArr3:',returnArr3)
-      //returnArr3
-      [
-        { x: new Date(1986, 1, 1), y: 20000 },
-        { x: new Date(1996, 1, 1), y: 3500 },
-        { x: new Date(2006, 1, 1), y: 82000 },
-        { x: new Date(2016, 1, 1), y: 60000 }
-      ]
+      //console.log('returnArr3:',returnArr3)
+      returnArr3
+      /*[
+        { x: '01011986', y: 20000 },
+        { x: '01011996', y: 3500 },
+        { x: '01012006', y: 82000 },
+        { x: '01012016', y: 60000 }
+      ]*/
   )
 }
 
