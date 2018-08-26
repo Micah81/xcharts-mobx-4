@@ -27,9 +27,9 @@ class ChartStore {
     { x: new Date(2006, 1, 1), y: 8200 },
     { x: new Date(2016, 1, 1), y: 15500 }
   ]
-  @action updateAccountHistory(user, today, acctHistNumPeriods, acctHistTimeFrame){
+  @action updateAccountHistory(user, today, acctHistNumPeriods, acctHistTimeFrame, accountBalance){
     try {
-      this.accountHistory= db.updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame)
+      this.accountHistory= db.updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame, accountBalance)
     } catch (error) {
         runInAction(() => {
             console.log('Error in chartStore in updateAccountHistory:', error)
@@ -80,7 +80,7 @@ class ChartStore {
     }
   }
 
-  @observable accountBalance = 10000
+  @observable accountBalance = 100
 
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
@@ -122,7 +122,7 @@ class ChartStore {
       this.updateClosedTrades(User)
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
-      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame)
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
@@ -133,7 +133,7 @@ class ChartStore {
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
     } else if (Vote === 'Begin') {
       db.voteBegin(ActiveSymbol, now, User)
-      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame)
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     }
 
     // change activeSymbol
