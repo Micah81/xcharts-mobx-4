@@ -7,6 +7,17 @@ import * as ts from '../utils/robinhood/topStocks';
 import * as creds from '../utils/robinhood/credentials';
 import * as imo from '../utils/isMarketOpen';
 
+function shuffle(sourceArray) {
+    for (var i = 0; i < sourceArray.length - 1; i++) {
+        var j = i + Math.floor(Math.random() * (sourceArray.length - i));
+
+        var temp = sourceArray[j];
+        sourceArray[j] = sourceArray[i];
+        sourceArray[i] = temp;
+    }
+    return sourceArray;
+}
+
 let id = 0;
 function createData(symbol, date, cost, quote, pl) {
   id += 1;
@@ -80,7 +91,7 @@ class ChartStore {
     }
   }
 
-  @observable accountBalance = 100
+  @observable accountBalance = 0
 
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
@@ -96,6 +107,9 @@ class ChartStore {
         sdata.map( (data) => (
           this.allSymbols.push(data.symbol)
         ) )
+        console.log('this.allSymbols1:',this.allSymbols)
+        shuffle(this.allSymbols)
+        console.log('this.allSymbols2:',this.allSymbols)
       })
     } catch (error) {
         runInAction(() => {
