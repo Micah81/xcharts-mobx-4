@@ -131,23 +131,27 @@ class ChartStore {
 
     // record vote
     if (Vote === 'Up') {
-      this.updateIsMarketOpen(today)
-      this.updateRows(User)
-      this.updateClosedTrades(User)
+
+      this.updateRows(User) // open trades
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
       this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
+      this.updateClosedTrades(User)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
+      this.updateClosedTrades(User)
     } else if (Vote === 'Begin') {
       db.voteBegin(ActiveSymbol, now, User)
       this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
+      this.updateIsMarketOpen(today)
+      this.updateRows(User) // open trades
+      this.updateClosedTrades(User)
     }
 
     // change activeSymbol
