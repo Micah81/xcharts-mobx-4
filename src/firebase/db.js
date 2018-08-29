@@ -223,7 +223,6 @@ export function getClosedTrades(user){
   )
 }
 
-
 let returnArr3 = [];
 export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame, accountBalance){
   returnArr3.length = 0
@@ -301,7 +300,33 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
   )
 }
 
+export function addSymbol(user, symbol){
+  db.ref('/users/' +user+ '/mocktrades/symbols/').orderByChild('symbol').equalTo(symbol).once("value", function(snapshot) {
+    if(snapshot.val()==null){
+      console.log('Adding',symbol,'to this users symbols in Firebase.')
+      db.ref('/users/' +user+ '/mocktrades/symbols/').push({
+          symbol: symbol
+        })
+      } else {
+        console.log(symbol,'is already in this users symbols in Firebase.')
+      }
+    })
+  }
 
+    //
+    // //-------------------
+    // console.log('db.addSymbol: snapshot.val():',snapshot.val())
+    // if(snapshot.val()==null){
+    //   db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
+    //     symbol: symbol
+    //   })
+    //   // return an array of all these symbols
+//       return ['F','PM']
+//     } else {
+//       console.log('Symbol',symbol,'is already in this users symbols.')
+//     }
+//   })
+// }
 
 
 ///--------------------------------------------------------------------------------------

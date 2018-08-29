@@ -6,11 +6,10 @@ import * as api from '../utils/api';
 import * as ts from '../utils/robinhood/topStocks';
 import * as creds from '../utils/robinhood/credentials';
 import * as imo from '../utils/isMarketOpen';
-
+//----------------------------------------
 function shuffle(sourceArray) {
     for (var i = 0; i < sourceArray.length - 1; i++) {
         var j = i + Math.floor(Math.random() * (sourceArray.length - i));
-
         var temp = sourceArray[j];
         sourceArray[j] = sourceArray[i];
         sourceArray[i] = temp;
@@ -27,6 +26,7 @@ function createDataClosedTrades(symbol, dateOpened, priceOpened, dateClosed, pri
   id += 1;
   return { id, symbol, dateOpened, priceOpened, dateClosed, priceClosed, pl };
 }
+//----------------------------------------
 
 class ChartStore {
 
@@ -93,6 +93,10 @@ class ChartStore {
 
   @observable accountBalance = 0
 
+  @action addSymbol(user, symbol){
+    let a = db.addSymbol(user, symbol)
+  }
+
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
   @observable activeSymbol = 'NA'
@@ -131,7 +135,7 @@ class ChartStore {
 
     // record vote
     if (Vote === 'Up') {
-
+      this.addSymbol(User, ActiveSymbol)
       this.updateRows(User) // open trades
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
