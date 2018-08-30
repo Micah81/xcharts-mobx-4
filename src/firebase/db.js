@@ -54,7 +54,6 @@ export const voteUp = (symbol, today, user) =>
 
 export const voteDown = (symbol, today, user) =>
   db.ref('/votes/' +today+ '/' +symbol+ '/').child('voters').orderByChild('user').equalTo(user).on("value", function(snapshot) {
-    console.log(snapshot.val());
     if(snapshot.val()==null){
       db.ref('/votes/' +today+ '/' +symbol+ '/voters/').push({
         user: user
@@ -304,7 +303,7 @@ export function addSymbol(user, symbol){
   db.ref('/users/' +user+ '/mocktrades/symbols/').orderByChild('symbol').equalTo(symbol).once("value", function(snapshot) {
     if(snapshot.val()==null){
       console.log('Adding',symbol,'to this users symbols in Firebase.')
-      db.ref('/users/' +user+ '/mocktrades/symbols/').push({
+      db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
           symbol: symbol
         })
       } else {
@@ -312,6 +311,21 @@ export function addSymbol(user, symbol){
       }
     })
   }
+
+export function removeSymbol(user, symbol){
+  db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
+    if(snapshot.val()!=null){
+      console.log('Removing',symbol,'from this users symbols in Firebase.')
+      db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').remove(function(error) {
+        console.log(error ? "Trade not removed from symbol list in Firebase." : "Trade removed from symbol list in Firebase.")
+      })
+      } else {
+        console.log(symbol,'is already not in this users symbols in Firebase.')
+      }
+    })
+  }
+
+
 
     //
     // //-------------------

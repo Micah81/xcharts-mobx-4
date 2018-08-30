@@ -97,6 +97,10 @@ class ChartStore {
     let a = db.addSymbol(user, symbol)
   }
 
+  @action removeSymbol(user, symbol){
+    let b = db.removeSymbol(user, symbol)
+  }
+
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
   @observable activeSymbol = 'NA'
@@ -143,12 +147,14 @@ class ChartStore {
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
+      this.removeSymbol(User, ActiveSymbol)
       this.updateClosedTrades(User)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
+      this.removeSymbol(User, ActiveSymbol)
       this.updateClosedTrades(User)
     } else if (Vote === 'Begin') {
       db.voteBegin(ActiveSymbol, now, User)
