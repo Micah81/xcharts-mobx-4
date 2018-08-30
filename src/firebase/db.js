@@ -192,9 +192,9 @@ export function getOpenTrades(user){
   returnArr.length = 0
   db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
-      childSnapshot.forEach(function(item) {
-        let quote = 1000 // sq.stockQuote(String(childSnapshot.key), creds.credentials)
-        //if(quote){console.log('quote:',quote)}
+      childSnapshot.forEach(async function(item) {
+        let quote = await sq.stockQuote(String(childSnapshot.key), creds.credentials)
+        if(quote){console.log('quote:',quote)}
         let itemVal = item.val()
         let newData = createData(String(childSnapshot.key), itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
         returnArr.push(newData);
@@ -300,7 +300,7 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
 }
 
 export function addSymbol(user, symbol){
-  db.ref('/users/' +user+ '/mocktrades/symbols/').orderByChild('symbol').equalTo(symbol).once("value", function(snapshot) {
+  db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
     if(snapshot.val()==null){
       console.log('Adding',symbol,'to this users symbols in Firebase.')
       db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
@@ -317,30 +317,13 @@ export function removeSymbol(user, symbol){
     if(snapshot.val()!=null){
       console.log('Removing',symbol,'from this users symbols in Firebase.')
       db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').remove(function(error) {
-        console.log(error ? "Trade not removed from symbol list in Firebase." : "Trade removed from symbol list in Firebase.")
+        console.log(error ? symbol+" not removed from symbol list in Firebase." : symbol+" removed from symbol list in Firebase.")
       })
       } else {
         console.log(symbol,'is already not in this users symbols in Firebase.')
       }
     })
   }
-
-
-
-    //
-    // //-------------------
-    // console.log('db.addSymbol: snapshot.val():',snapshot.val())
-    // if(snapshot.val()==null){
-    //   db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
-    //     symbol: symbol
-    //   })
-    //   // return an array of all these symbols
-//       return ['F','PM']
-//     } else {
-//       console.log('Symbol',symbol,'is already in this users symbols.')
-//     }
-//   })
-// }
 
 
 ///--------------------------------------------------------------------------------------

@@ -93,15 +93,18 @@ class ChartStore {
 
   @observable accountBalance = 0
 
+  @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
+
   @action addSymbol(user, symbol){
+    // need to change this to:
+    // this.allSymbols = db.addSymbol(user, symbol)
+    // shuffle(this.allSymbols)
     let a = db.addSymbol(user, symbol)
   }
 
   @action removeSymbol(user, symbol){
     let b = db.removeSymbol(user, symbol)
   }
-
-  @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
   @observable activeSymbol = 'NA'
 
@@ -115,9 +118,7 @@ class ChartStore {
         sdata.map( (data) => (
           this.allSymbols.push(data.symbol)
         ) )
-        console.log('this.allSymbols1:',this.allSymbols)
         shuffle(this.allSymbols)
-        console.log('this.allSymbols2:',this.allSymbols)
       })
     } catch (error) {
         runInAction(() => {
