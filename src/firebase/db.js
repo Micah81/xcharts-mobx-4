@@ -2,6 +2,7 @@ import { db } from './firebase';
 import * as sq from '../utils/robinhood/stockQuote';
 import * as creds from '../utils/robinhood/credentials';
 import moment from 'moment';
+var Promise = require('promise');
 
 // User API
 export const doCreateUser = (id, username, email) =>
@@ -299,18 +300,46 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
   )
 }
 
-export function addSymbol(user, symbol){
-  db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
-    if(snapshot.val()==null){
-      console.log('Adding',symbol,'to this users symbols in Firebase.')
-      db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
-          symbol: symbol
-        })
-      } else {
-        console.log(symbol,'is already in this users symbols in Firebase.')
-      }
+// export function addSymbol(user, symbol){
+//   db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
+//     if(snapshot.val()==null){
+//       console.log('Adding',symbol,'to this users symbols in Firebase.')
+//       db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
+//           symbol: symbol
+//         })
+//       } else {
+//         console.log(symbol,'is already in this users symbols in Firebase.')
+//       }
+//     })
+//   }
+
+
+  export function addSymbol(user, symbol){
+    let returnArr4 = [];
+    return new Promise(function (fulfill, reject){
+      db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
+        if(snapshot.val()==null) {
+          console.log('Adding',symbol,'to this users symbols in Firebase.')
+          db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
+              symbol: symbol
+            }).then(() => {
+              db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
+                snapshot.forEach(function(data) {
+                  returnArr4.push(data.key)
+                  //fulfill(data)
+                })
+                fulfill(returnArr4)
+              })
+            })
+        }
+        else {
+          let err = symbol+' is already in this users symbols in Firebase.'
+          reject(err);
+        }
+      })
     })
   }
+
 
 export function removeSymbol(user, symbol){
   db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {

@@ -6,6 +6,8 @@ import * as api from '../utils/api';
 import * as ts from '../utils/robinhood/topStocks';
 import * as creds from '../utils/robinhood/credentials';
 import * as imo from '../utils/isMarketOpen';
+var Promise = require('promise');
+
 //----------------------------------------
 function shuffle(sourceArray) {
     for (var i = 0; i < sourceArray.length - 1; i++) {
@@ -95,12 +97,51 @@ class ChartStore {
 
   @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
 
+  // @action addSymbol(user, symbol){
+  //   // need to change this to:
+  //   // this.allSymbols = db.addSymbol(user, symbol)
+  //   // shuffle(this.allSymbols)
+  //   let a = db.addSymbol(user, symbol)
+  // }
+  //
+  //   function readJSON(filename){
+  //   return new Promise(function (fulfill, reject){
+  //     readFile(filename, 'utf8').done(function (res){
+  //       try {
+  //         fulfill(JSON.parse(res));
+  //       } catch (ex) {
+  //         reject(ex);
+  //       }
+  //     }, reject);
+  //   });
+  // }
+
+
   @action addSymbol(user, symbol){
-    // need to change this to:
-    // this.allSymbols = db.addSymbol(user, symbol)
-    // shuffle(this.allSymbols)
-    let a = db.addSymbol(user, symbol)
+    return new Promise(function (fulfill, reject){
+      db.addSymbol(user, symbol).done(function (res){
+        try {
+          runInAction(() => {
+            console.log('res:',res)
+            this.allSymbols = res;
+            shuffle(this.allSymbols)
+            fulfill(res);
+          })
+        } catch (err) {
+          reject(err);
+        }
+      }, reject)
+    })
   }
+
+
+
+
+
+
+
+
+
 
   @action removeSymbol(user, symbol){
     let b = db.removeSymbol(user, symbol)
@@ -131,8 +172,9 @@ class ChartStore {
   @action
   async updateChart(ActiveSymbol, Vote, User) {
     if (this.n === 0){
-      this.updateSymbolsArray()
-      console.log('Updated symbols array, which should happen just once.')
+      //this.updateSymbolsArray()
+      //console.log('Updated symbols array, which should happen just once.')
+      console.log('DISABLED: Updated symbols array, which should happen just once.')
     }
 
     var today = moment().format('MMDDYYYY');
