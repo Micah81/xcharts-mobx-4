@@ -1,8 +1,8 @@
-var promise;
+var Promise = require('promise');
 
 module.exports = {
   TopStocks: function (credentials) {
-    return promise = new Promise(function(resolve, reject) {
+    return Promise = new Promise(function(resolve, reject) {
       var Robinhood = require('robinhood')(credentials, function(){
           Robinhood.sp500_up(function(err, response, body){
               if(err){

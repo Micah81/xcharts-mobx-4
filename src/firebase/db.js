@@ -188,13 +188,12 @@ function createDataAcctHistory(dateClosed, tradeProfitLoss) {
     return { x: String(dateClosed), y: parseFloat(tradeProfitLoss.toFixed(2)) }
 }
 
-let returnArr = [];
 export function getOpenTrades(user){
-  returnArr.length = 0
+  let returnArr = [];
   db.ref('/users/' +user+ '/mocktrades/holdings/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       childSnapshot.forEach(async function(item) {
-        let quote = await sq.stockQuote(String(childSnapshot.key), creds.credentials)
+        let quote = 1000;// await sq.stockQuote(String(childSnapshot.key), creds.credentials)
         if(quote){console.log('quote:',quote)}
         let itemVal = item.val()
         let newData = createData(String(childSnapshot.key), itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
@@ -208,9 +207,8 @@ export function getOpenTrades(user){
   )
 }
 
-let returnArr2 = [];
 export function getClosedTrades(user){
-  returnArr2.length = 0
+  let returnArr2 = [];
   db.ref('/users/' +user+ '/mocktrades/history/').on("value", function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
       let itemVal = childSnapshot.val()
@@ -223,9 +221,8 @@ export function getClosedTrades(user){
   )
 }
 
-let returnArr3 = [];
 export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeFrame, accountBalance){
-  returnArr3.length = 0
+  let returnArr3 = [];
   // I know their time frame. The chart only needs the data points within that time frame.
     let timeFrame = acctHistNumPeriods // 30 (days)
   // What are the first date of the time frame?
@@ -300,60 +297,67 @@ export function updateAcctHistory(user, today, acctHistNumPeriods, acctHistTimeF
   )
 }
 
-// export function addSymbol(user, symbol){
-//   db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
-//     if(snapshot.val()==null){
-//       console.log('Adding',symbol,'to this users symbols in Firebase.')
-//       db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
-//           symbol: symbol
-//         })
-//       } else {
-//         console.log(symbol,'is already in this users symbols in Firebase.')
-//       }
-//     })
-//   }
-
-
-  export function addSymbol(user, symbol){
-    let returnArr4 = [];
-    return new Promise(function (fulfill, reject){
-      db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
-        if(snapshot.val()==null) {
-          console.log('Adding',symbol,'to this users symbols in Firebase.')
-          db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
-              symbol: symbol
-            }).then(() => {
-              db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
-                snapshot.forEach(function(data) {
-                  returnArr4.push(data.key)
-                  //fulfill(data)
-                })
-                fulfill(returnArr4)
-              })
-            })
-        }
-        else {
-          let err = symbol+' is already in this users symbols in Firebase.'
-          reject(err);
-        }
-      })
+export function addTopStocksToFirebase(user, symbol){
+  db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
+      symbol: symbol
     })
-  }
+}
 
-
-export function removeSymbol(user, symbol){
-  db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
-    if(snapshot.val()!=null){
-      console.log('Removing',symbol,'from this users symbols in Firebase.')
-      db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').remove(function(error) {
-        console.log(error ? symbol+" not removed from symbol list in Firebase." : symbol+" removed from symbol list in Firebase.")
-      })
-      } else {
-        console.log(symbol,'is already not in this users symbols in Firebase.')
+export function addSymbol(user, symbol){
+  let returnArr4 = [];
+  return new Promise(function (fulfill, reject){
+    db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
+      if(snapshot.val()==null) {
+        console.log('Adding',symbol,'to this users symbols in Firebase.')
+        db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').push({
+            symbol: symbol
+          }).then(() => {
+            db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
+              snapshot.forEach(function(data) {
+                returnArr4.push(data.key)
+              })
+              fulfill(returnArr4)
+            })
+          })
+      }
+      else {
+        db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
+          snapshot.forEach(function(data) {
+            returnArr4.push(data.key)
+          })
+          fulfill(returnArr4)
+        })
       }
     })
-  }
+  })
+}
 
+export function removeSymbol(user, symbol){
+  let returnArr4 = [];
+  return new Promise(function (fulfill, reject){
+    db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').once("value", function(snapshot) {
+      if(snapshot.val()!=null) {
+        console.log('Adding',symbol,'to this users symbols in Firebase.')
+        db.ref('/users/' +user+ '/mocktrades/symbols/' +symbol+ '/').remove().then(() => {
+            db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
+              snapshot.forEach(function(data) {
+                returnArr4.push(data.key)
+              })
+              fulfill(returnArr4)
+            })
+          })
+      }
+      else {
+        db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
+          snapshot.forEach(function(data) {
+            returnArr4.push(data.key)
+          })
+          fulfill(returnArr4)
+        })
+      }
+    })
+  })
+}
 
 ///--------------------------------------------------------------------------------------
 // Mock trading API

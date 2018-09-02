@@ -95,26 +95,7 @@ class ChartStore {
 
   @observable accountBalance = 0
 
-  @observable allSymbols = ['NA', 'AMZN', 'WMT', 'AMD', 'SQ']
-
-  // @action addSymbol(user, symbol){
-  //   // need to change this to:
-  //   // this.allSymbols = db.addSymbol(user, symbol)
-  //   // shuffle(this.allSymbols)
-  //   let a = db.addSymbol(user, symbol)
-  // }
-  //
-  //   function readJSON(filename){
-  //   return new Promise(function (fulfill, reject){
-  //     readFile(filename, 'utf8').done(function (res){
-  //       try {
-  //         fulfill(JSON.parse(res));
-  //       } catch (ex) {
-  //         reject(ex);
-  //       }
-  //     }, reject);
-  //   });
-  // }
+  @observable allSymbols = ['AMZN', 'WMT', 'AMD', 'SQ']
 
 
   @action addSymbol(user, symbol){
@@ -122,9 +103,6 @@ class ChartStore {
       db.addSymbol(user, symbol).done(function (res){
         try {
           runInAction(() => {
-            console.log('res:',res)
-            this.allSymbols = res;
-            shuffle(this.allSymbols)
             fulfill(res);
           })
         } catch (err) {
@@ -134,32 +112,32 @@ class ChartStore {
     })
   }
 
-
-
-
-
-
-
-
-
-
   @action removeSymbol(user, symbol){
-    let b = db.removeSymbol(user, symbol)
+    return new Promise(function (fulfill, reject){
+      db.removeSymbol(user, symbol).done(function (res){
+        try {
+          runInAction(() => {
+            fulfill(res);
+          })
+        } catch (err) {
+          reject(err);
+        }
+      }, reject)
+    })
   }
 
-  @observable activeSymbol = 'NA'
+  @observable activeSymbol = 'AMZN'
 
   @observable n = 0
 
   @action
-  async updateSymbolsArray(){
+  async updateSymbolsArray(user, symbol){
     try {
       const sdata = await ts.TopStocks(creds.credentials)
       runInAction(() => {
-        sdata.map( (data) => (
-          this.allSymbols.push(data.symbol)
-        ) )
-        shuffle(this.allSymbols)
+        sdata.map((data) => (
+          db.addTopStocksToFirebase(user, data.symbol)
+        ))
       })
     } catch (error) {
         runInAction(() => {
@@ -171,39 +149,37 @@ class ChartStore {
 
   @action
   async updateChart(ActiveSymbol, Vote, User) {
-    if (this.n === 0){
-      //this.updateSymbolsArray()
-      //console.log('Updated symbols array, which should happen just once.')
-      console.log('DISABLED: Updated symbols array, which should happen just once.')
-    }
-
     var today = moment().format('MMDDYYYY');
     var now = moment().format();
 
     // record vote
     if (Vote === 'Up') {
-      this.addSymbol(User, ActiveSymbol)
-      this.updateRows(User) // open trades
+      this.allSymbols = await this.addSymbol(User, ActiveSymbol)
+      this.updateRows(User)
       db.voteUp(ActiveSymbol, today, User)
       db.mockBuy(ActiveSymbol, today, User, this.currentPrice)
       this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     } else if (Vote ==='Down') {
       db.voteDown(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
-      this.removeSymbol(User, ActiveSymbol)
+      this.allSymbols = await this.removeSymbol(User, ActiveSymbol)
       this.updateClosedTrades(User)
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     } else if (Vote === 'Sideways') {
       db.voteSideways(ActiveSymbol, today, User)
     } else if (Vote === 'Unsure') {
       db.voteUnsure(ActiveSymbol, today, User)
       db.mockSell(ActiveSymbol, today, User, this.currentPrice)
-      this.removeSymbol(User, ActiveSymbol)
+      this.allSymbols = await this.removeSymbol(User, ActiveSymbol)
       this.updateClosedTrades(User)
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     } else if (Vote === 'Begin') {
+      shuffle(this.allSymbols)
+      this.updateSymbolsArray(User, ActiveSymbol)
       db.voteBegin(ActiveSymbol, now, User)
       this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
       this.updateIsMarketOpen(today)
-      this.updateRows(User) // open trades
+      this.updateRows(User)
       this.updateClosedTrades(User)
     }
 

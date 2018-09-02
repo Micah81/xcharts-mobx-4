@@ -1,4 +1,4 @@
-var promise;
+//var Promise = require('promise');
 
 module.exports = {
   stockQuote: function (symbol, credentials) {
