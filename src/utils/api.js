@@ -26,10 +26,7 @@ export function fetchChartData (instrument) {
             getQuotes((hash[key]), latestQuotes)
           })
 
-          if (latestQuotes){
-            let time1 = moment().format()
-            let time2 = moment().subtract(20, 'minutes').from(moment())
-            db.storeChartData(instrument, latestQuotes.reverse(), time1, time2)
+          if (latestQuotes){            
             return (
               latestQuotes.reverse()
             )

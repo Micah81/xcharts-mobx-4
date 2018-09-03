@@ -414,22 +414,36 @@ export const mockSell = (symbol, today, user, currentPrice) =>
 
 ///--------------------------------------------------------------------------------------
 // Chart Data API
-export function storeChartData(symbol, latestQuotesR, time1, time2){
+export function currentChartData(symbol, time1, time2){
   console.log('time1:',time1)
-  console.log('time2:',time2)
+  console.log('time2:',time2) // seems to be unusable '20 minutes ago'
 
+// FILTER THIS FOR TIME once time2 is usable
   db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot) {
     if(snapshot.val()!=null){
-      // already in there
-      console.log('snapshot.val():',snapshot.val())
-      return
+      console.log(symbol,'is true')
+      return(true)
     } else {
-      // FILTER THIS FOR TIME !!!!!!!!!!!!!!!!!!!!!!!!
-      console.log("HEY!")
-      db.ref('/chartData/' +symbol+ '/').push({
-        time: time1,
-        data: latestQuotesR
-    })
-  }
-})
+      console.log(symbol,'is false')
+      return(false)
+    }
+  })
+}
+
+export function putChartDataIntoFB(symbol, data, time){
+  console.log('symbol:',symbol)
+  console.log('data:',data)
+  console.log('time:',time)
+  db.ref('/chartData/' +symbol+ '/').push({
+    time: time,
+    data: data
+  }).then(() => {
+    console.log("Added chart data to FB.")
+  })
+}
+
+export function getFBChartData(symbol){
+  db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot){
+      return snapshot
+  })
 }
