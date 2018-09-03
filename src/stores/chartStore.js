@@ -183,12 +183,6 @@ class ChartStore {
       this.updateClosedTrades(User)
     }
 
-    // change activeSymbol
-    this.n++
-
-    // update activeSymbol
-    this.activeSymbol = this.allSymbols[this.n]
-
     // update chartData
     // use api only if data not updated within 20 minutes
     // dont use API if the market isn't open.
@@ -200,19 +194,22 @@ class ChartStore {
         if (dataIsCurrent != true){
           let cdata = await api.fetchChartData(this.activeSymbol)
           runInAction(() => {
-                this.chartData = cdata
-                this.currentPrice = cdata[cdata.length-1].close
-                console.log("This chart data came from the API.")
-                if(cdata){db.putChartDataIntoFB(this.activeSymbol, cdata, time1)}
+            if (dataIsCurrent != true){
+              this.chartData = cdata
+              this.currentPrice = cdata[cdata.length-1].close
+              console.log("This chart data came from the API.")
+              if(cdata){db.putChartDataIntoFB(this.activeSymbol, cdata, time1)}
+            }
           })
         } else {
-          // use the current data for the chart
-          let cdata = await db.getFBChartData(this.activeSymbol) // <<<< Needs to be a promise, I think
+          let cdata = await db.getFBChartData(this.activeSymbol)
           console.log('cdata:',cdata)
           runInAction(() => {
-                this.chartData = cdata
-                this.currentPrice = cdata[cdata.length-1].close
-                console.log("This chart data came from Firebase.")
+            if (dataIsCurrent === true){
+              this.chartData = cdata
+              this.currentPrice = cdata[cdata.length-1].close
+              console.log("This chart data came from Firebase.")
+            }
           })
         }
     } catch (error) {
@@ -220,6 +217,12 @@ class ChartStore {
             console.log('Error in chartStore near //update chartData:', error)
         })
     }
+
+    // change activeSymbol
+    this.n++
+
+    // update activeSymbol
+    this.activeSymbol = this.allSymbols[this.n]
 }
 
   @observable chartData = [

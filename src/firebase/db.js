@@ -418,7 +418,7 @@ export function currentChartData(symbol, time1, time2){
   console.log('time1:',time1)
   console.log('time2:',time2) // seems to be unusable '20 minutes ago'
 
-// FILTER THIS FOR TIME once time2 is usable
+  // FILTER THIS FOR TIME once time2 is usable
   db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot) {
     if(snapshot.val()!=null){
       console.log(symbol,'is true')
@@ -443,6 +443,7 @@ export function putChartDataIntoFB(symbol, data, time){
 }
 
 export function getFBChartData(symbol){
+  // NEED TO LIMIT THIS TO RETURN THE MOST RECENT RESULT 
   db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot){
       return snapshot
   })
