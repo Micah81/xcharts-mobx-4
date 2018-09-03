@@ -194,14 +194,13 @@ export function getOpenTrades(user){
     snapshot.forEach(function(childSnapshot) {
       childSnapshot.forEach(async function(item) {
         let quote = 1000;// await sq.stockQuote(String(childSnapshot.key), creds.credentials)
-        if(quote){console.log('quote:',quote)}
+        //if(quote){console.log('quote:',quote)}
         let itemVal = item.val()
         let newData = createData(String(childSnapshot.key), itemVal.dateOpened, itemVal.priceOpened, quote, quote-itemVal.priceOpened)
         returnArr.push(newData);
       })
     })
   })
-  console.log('returnArr',returnArr)
   return(
       returnArr
   )
@@ -412,3 +411,25 @@ export const mockSell = (symbol, today, user, currentPrice) =>
       })
     }
   })
+
+///--------------------------------------------------------------------------------------
+// Chart Data API
+export function storeChartData(symbol, latestQuotesR, time1, time2){
+  console.log('time1:',time1)
+  console.log('time2:',time2)
+
+  db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot) {
+    if(snapshot.val()!=null){
+      // already in there
+      console.log('snapshot.val():',snapshot.val())
+      return
+    } else {
+      // FILTER THIS FOR TIME !!!!!!!!!!!!!!!!!!!!!!!!
+      console.log("HEY!")
+      db.ref('/chartData/' +symbol+ '/').push({
+        time: time1,
+        data: latestQuotesR
+    })
+  }
+})
+}

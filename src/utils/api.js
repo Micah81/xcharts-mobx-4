@@ -1,6 +1,7 @@
+import moment from 'moment';
+import { db } from '../firebase';
 var axios = require('axios');
 var key = require('./apiKey')
-
 
 function getQuotes (period, latestQuotes) {
   latestQuotes.push({
@@ -13,8 +14,7 @@ function getQuotes (period, latestQuotes) {
                   });
 }
 
-module.exports = {
-  fetchChartData: function (instrument) {
+export function fetchChartData (instrument) {
     var latestQuotes = [];
     var encodedURI = window.encodeURI('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + instrument + '&apikey=' + key);
     return(axios.get(encodedURI))
@@ -27,6 +27,9 @@ module.exports = {
           })
 
           if (latestQuotes){
+            let time1 = moment().format()
+            let time2 = moment().subtract(20, 'minutes').from(moment())
+            db.storeChartData(instrument, latestQuotes.reverse(), time1, time2)
             return (
               latestQuotes.reverse()
             )
@@ -41,8 +44,6 @@ module.exports = {
               ]
             )
           }
-
-
         } else {
           [
             {open: 5, close: 10, high: 15, low: 0},
@@ -57,4 +58,3 @@ module.exports = {
         console.log('Error getting chartData:',error)
       })
   }
-}
