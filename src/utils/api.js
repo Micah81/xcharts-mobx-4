@@ -14,6 +14,7 @@ function getQuotes (period, latestQuotes) {
                   });
 }
 
+// fetchChartData MUST RETURN A PROMISE 
 export function fetchChartData (instrument) {
     var latestQuotes = [];
     var encodedURI = window.encodeURI('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + instrument + '&apikey=' + key);
@@ -26,7 +27,7 @@ export function fetchChartData (instrument) {
             getQuotes((hash[key]), latestQuotes)
           })
 
-          if (latestQuotes){            
+          if (latestQuotes){
             return (
               latestQuotes.reverse()
             )

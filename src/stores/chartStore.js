@@ -189,28 +189,41 @@ class ChartStore {
     try {
         let time1 = moment().format()
         let time2 = moment().subtract(20, 'minutes').from(time1)
-        let dataIsCurrent = db.currentChartData(ActiveSymbol, time1, time2)
+
+        function checkCurrentChartData(ActiveSymbol, time1, time2){
+          return new Promise(function (fulfill, reject){
+            db.currentChartData(ActiveSymbol, time1, time2).done(function (res){
+              try {
+                fulfill(res)
+              } catch(err) {
+                reject(err)
+              }
+            }, reject)
+          })
+        }
+
+        let dataIsCurrent = await checkCurrentChartData(ActiveSymbol, time1, time2)
 
         if (dataIsCurrent != true){
+          // fetchChartData MUST RETURN A PROMISE AND THIS MUST WAIT FOR IT 
+          console.log('dataIsCurrent1:',dataIsCurrent)
           let cdata = await api.fetchChartData(this.activeSymbol)
           runInAction(() => {
-            if (dataIsCurrent != true){
-              this.chartData = cdata
-              this.currentPrice = cdata[cdata.length-1].close
-              console.log("This chart data came from the API.")
-              if(cdata){db.putChartDataIntoFB(this.activeSymbol, cdata, time1)}
-            }
+            this.chartData = cdata
+            this.currentPrice = cdata[cdata.length-1].close
+            console.log("This chart data came from the API.")
+            if(cdata){db.putChartDataIntoFB(this.activeSymbol, cdata, time1)}
           })
         } else {
-          let cdata = await db.getFBChartData(this.activeSymbol)
-          console.log('cdata:',cdata)
-          runInAction(() => {
-            if (dataIsCurrent === true){
-              this.chartData = cdata
-              this.currentPrice = cdata[cdata.length-1].close
-              console.log("This chart data came from Firebase.")
-            }
-          })
+          // getFBChartData MUST RETURN A PROMISE AND THIS MUST WAIT FOR IT
+          console.log('dataIsCurrent2:',dataIsCurrent)
+          let chdata = await db.getFBChartData(this.activeSymbol)
+          if(chdata){
+            console.log('cdata:',chdata)
+            this.chartData = chdata
+            this.currentPrice = chdata[chdata.length-1].close
+            console.log("This chart data came from Firebase.")
+          }
         }
     } catch (error) {
         runInAction(() => {
