@@ -14,8 +14,9 @@ function getQuotes (period, latestQuotes) {
                   });
 }
 
-// fetchChartData MUST RETURN A PROMISE 
+// fetchChartData MUST RETURN A PROMISE
 export function fetchChartData (instrument) {
+  return new Promise(function (fulfill, reject){
     var latestQuotes = [];
     var encodedURI = window.encodeURI('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + instrument + '&apikey=' + key);
     return(axios.get(encodedURI))
@@ -28,11 +29,11 @@ export function fetchChartData (instrument) {
           })
 
           if (latestQuotes){
-            return (
+            fulfill (
               latestQuotes.reverse()
             )
           } else {
-            return (
+            fulfill (
               [
                 {open: 5, close: 10, high: 15, low: 0},
                 {open: 10, close: 15, high: 20, low: 5},
@@ -42,17 +43,10 @@ export function fetchChartData (instrument) {
               ]
             )
           }
-        } else {
-          [
-            {open: 5, close: 10, high: 15, low: 0},
-            {open: 10, close: 15, high: 20, low: 5},
-            {open: 15, close: 20, high: 22, low: 10},
-            {open: 20, close: 10, high: 25, low: 7},
-            {open: 10, close: 8, high: 15, low: 5}
-          ]
         }
       })
       .catch(function (error) {
         console.log('Error getting chartData:',error)
       })
+    })
   }

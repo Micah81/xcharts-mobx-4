@@ -444,9 +444,13 @@ export function putChartDataIntoFB(symbol, data, time){
 }
 
 export function getFBChartData(symbol){
-  // MUST BE A PROMISE
   // NEED TO LIMIT THIS TO RETURN THE MOST RECENT RESULT
-  db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot){
-      return snapshot
+  return new Promise(function (fulfill, reject){
+  db.ref('/chartData/' +symbol+ '/').orderByChild('time').limitToLast(1).once("value", function(snapshot){
+      snapshot.forEach(function(childSnapshot) {
+        console.log('time:',childSnapshot.val().time)
+        fulfill(childSnapshot.val().data)
+      })
   })
+})
 }
