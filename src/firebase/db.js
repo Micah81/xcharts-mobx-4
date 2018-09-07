@@ -2,6 +2,8 @@ import { db } from './firebase';
 import * as sq from '../utils/robinhood/stockQuote';
 import * as creds from '../utils/robinhood/credentials';
 import moment from 'moment';
+const { DateTime } = require('luxon');
+DateTime.utc(-6);
 var Promise = require('promise');
 
 // User API
@@ -17,7 +19,6 @@ export const onceGetUsers = () =>
 // Voting API
 export const voteUp = (symbol, today, user) =>
   db.ref('/votes/' +today+ '/' +symbol+ '/').child('voters').orderByChild('user').equalTo(user).on("value", function(snapshot) {
-    //console.log(snapshot.val());
     if(snapshot.val()==null){
       db.ref('/votes/' +today+ '/' +symbol+ '/voters/').push({
         user: user
@@ -34,7 +35,6 @@ export const voteUp = (symbol, today, user) =>
     }
     snapshot.forEach(function(data) {
         if(data.key==null){
-          // Record the vote
           db.ref('/votes/' +today+ '/' +symbol+ '/voters/').push({
             user: user
               }).then(()=>{
@@ -382,11 +382,16 @@ export const mockBuy = (symbol, today, user, currentPrice) =>
 )
 
 export const mockSell = (symbol, today, user, currentPrice) =>
-  // does user already have a trade open for this symbol?
   db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').once("child_added", function(snapshot) {
+    let tradeDaysLength
     if(snapshot.val()==null){
       console.log('No trade is currently open for '+symbol+'.')
     } else {
+      if (today - snapshot.val().dateOpened == NaN){
+        tradeDaysLength = 0;
+      } else {
+        tradeDaysLength = snapshot.val().dateOpened;
+      }
       console.log('A trade for '+symbol+' is open and is being closed at ' +currentPrice+ '.')
 
       // update account history
@@ -397,7 +402,7 @@ export const mockSell = (symbol, today, user, currentPrice) =>
         dateOpened: snapshot.val().dateOpened,
         priceOpened: snapshot.val().priceOpened,
         profitLoss: currentPrice - snapshot.val().priceOpened,
-        tradeDaysLength: today - snapshot.val().dateOpened
+        tradeDaysLength: tradeDaysLength
       }).then(()=>{
         // remove trade from user's holdings
         db.ref('/users/' +user+ '/mocktrades/holdings/' +symbol+ '/').remove(function(error) {
@@ -415,16 +420,16 @@ export const mockSell = (symbol, today, user, currentPrice) =>
 ///--------------------------------------------------------------------------------------
 // Chart Data API
 export function currentChartData(symbol, time1, time2){
-  //console.log('time1:',time1)
-  //console.log('time2:',time2) // seems to be unusable '20 minutes ago'
-  // FILTER THIS FOR TIME once time2 is usable
+
   return new Promise(function (fulfill, reject){
-    db.ref('/chartData/' +symbol+ '/').once("value", function(snapshot) {
+    db.ref('/chartData/' +symbol+ '/').limitToLast(1).once("value", function(snapshot) {
       if(snapshot.val()!=null){
-        console.log(symbol,'is true')
-        fulfill(true)
+        snapshot.forEach(function(childSnapshot) {
+          let dbTime = DateTime.fromISO( childSnapshot.val().time )
+          if (time2 > dbTime) { fulfill(false) }
+            else { fulfill(true) }
+        })
       } else {
-        console.log(symbol,'is false')
         fulfill(false)
       }
     })
@@ -433,24 +438,20 @@ export function currentChartData(symbol, time1, time2){
 
 export function putChartDataIntoFB(symbol, data, time){
    console.log('symbol:',symbol)
-  // console.log('data:',data)
-  // console.log('time:',time)
   db.ref('/chartData/' +symbol+ '/').push({
     time: time,
     data: data
   }).then(() => {
-    console.log("Added chart data to FB.")
+    console.log("Added "+symbol+" chart data to FB.")
   })
 }
 
 export function getFBChartData(symbol){
-  // NEED TO LIMIT THIS TO RETURN THE MOST RECENT RESULT
   return new Promise(function (fulfill, reject){
   db.ref('/chartData/' +symbol+ '/').orderByChild('time').limitToLast(1).once("value", function(snapshot){
       snapshot.forEach(function(childSnapshot) {
-        console.log('time:',childSnapshot.val().time)
         fulfill(childSnapshot.val().data)
       })
+    })
   })
-})
 }

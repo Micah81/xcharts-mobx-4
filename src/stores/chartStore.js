@@ -6,7 +6,13 @@ import * as api from '../utils/api';
 import * as ts from '../utils/robinhood/topStocks';
 import * as creds from '../utils/robinhood/credentials';
 import * as imo from '../utils/isMarketOpen';
+import { Duration } from 'luxon'
 var Promise = require('promise');
+moment().utcOffset(-6);  // set hours offset
+const { DateTime } = require('luxon');
+DateTime.utc(-6);
+
+
 
 //----------------------------------------
 function shuffle(sourceArray) {
@@ -149,7 +155,7 @@ class ChartStore {
 
   @action
   async updateChart(ActiveSymbol, Vote, User) {
-    var today = moment().format('MMDDYYYY');
+    var today = moment().format();
     var now = moment().format();
 
     // record vote
@@ -184,11 +190,12 @@ class ChartStore {
     }
 
     // update chartData
-    // use api only if data not updated within 20 minutes
     // dont use API if the market isn't open.
     try {
-        let time1 = moment().format()
-        let time2 = moment().subtract(20, 'minutes').from(time1)
+
+        let time1 = DateTime.utc()
+        var dur = Duration.fromObject({minutes: 20});
+        let time2 =  time1.minus(dur)
 
         function checkCurrentChartData(ActiveSymbol, time1, time2){
           return new Promise(function (fulfill, reject){
@@ -204,8 +211,7 @@ class ChartStore {
 
         let dataIsCurrent = await checkCurrentChartData(ActiveSymbol, time1, time2)
 
-        if (dataIsCurrent != true){
-          // fetchChartData MUST RETURN A PROMISE AND THIS MUST WAIT FOR IT 
+        if (dataIsCurrent !== true){
           console.log('dataIsCurrent1:',dataIsCurrent)
           let cdata = await api.fetchChartData(this.activeSymbol)
           runInAction(() => {
@@ -215,7 +221,6 @@ class ChartStore {
             if(cdata){db.putChartDataIntoFB(this.activeSymbol, cdata, time1)}
           })
         } else {
-          // getFBChartData MUST RETURN A PROMISE AND THIS MUST WAIT FOR IT
           console.log('dataIsCurrent2:',dataIsCurrent)
           let chdata = await db.getFBChartData(this.activeSymbol)
           if(chdata){
