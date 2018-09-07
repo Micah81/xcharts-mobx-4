@@ -166,10 +166,20 @@ export const voteUnsure = (symbol, today, user) =>
     });
 })
 
-export const voteBegin = (symbol, now, user) =>
-  db.ref('/users/' +user+ '/begin/' +now+ '/').push({
-    begin: true
+export const voteBegin = (symbol, now, user) => {
+  return new Promise(function (fulfill, reject){
+    let returnArr4 = [];
+    db.ref('/users/' +user+ '/begin/' +now+ '/').push({
+      begin: true
+    })
+    db.ref('/users/' +user+ '/mocktrades/symbols/').once("value", function(snapshot) {
+        snapshot.forEach(function(data) {
+          returnArr4.push(data.key)
+        })
+        fulfill(returnArr4)
+    })
   })
+}
 
 ///--------------------------------------------------------------------------------------
 // User Control Panel API

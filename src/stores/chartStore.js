@@ -16,13 +16,15 @@ DateTime.utc(-6);
 
 //----------------------------------------
 function shuffle(sourceArray) {
+  return new Promise(function (fulfill, reject){
     for (var i = 0; i < sourceArray.length - 1; i++) {
         var j = i + Math.floor(Math.random() * (sourceArray.length - i));
         var temp = sourceArray[j];
         sourceArray[j] = sourceArray[i];
         sourceArray[i] = temp;
     }
-    return sourceArray;
+    fulfill(sourceArray);
+  })
 }
 
 let id = 0;
@@ -180,13 +182,13 @@ class ChartStore {
       this.updateClosedTrades(User)
       this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
     } else if (Vote === 'Begin') {
-      shuffle(this.allSymbols)
-      this.updateSymbolsArray(User, ActiveSymbol)
-      db.voteBegin(ActiveSymbol, now, User)
-      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance)
-      this.updateIsMarketOpen(today)
-      this.updateRows(User)
-      this.updateClosedTrades(User)
+      this.allSymbols = await db.voteBegin(ActiveSymbol, now, User)
+      shuffle(this.allSymbols) // just says they began on timeStamp
+      this.updateSymbolsArray(User, ActiveSymbol) // grabs todays 10 most popular stock symbols
+      this.updateIsMarketOpen(today) // says if today is a workday
+      this.updateRows(User) // updates the user's open trades
+      this.updateClosedTrades(User) // updates the user's closed trades
+      this.updateAccountHistory(User, today, this.acctHistNumPeriods, this.acctHistTimeFrame, this.accountBalance) // generates account profit/loss area chart
     }
 
     // update chartData
